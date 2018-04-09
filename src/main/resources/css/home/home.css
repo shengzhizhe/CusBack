@@ -1,0 +1,15 @@
+.home_gridPane{
+    /*-fx-background-image: url("../img/backgroup.gif") no-repeat left center;
+    -fx-background-size:cover;*/
+}
+.logout_button{
+    -fx-color:red;
+    /*设置圆角*/
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+}
+.menus{
+    /*设置圆角*/
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+}
