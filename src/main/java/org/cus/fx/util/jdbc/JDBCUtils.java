@@ -1,6 +1,10 @@
 package org.cus.fx.util.jdbc;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
+import java.util.Properties;
 
 /**
  * @author ld
@@ -77,13 +81,19 @@ public class JDBCUtils {
 
         try {
             //读取配置文件中的配置
-//            InputStream is = JDBCUtils.class.getClassLoader().getResourceAsStream("db.properties");
-//            Properties properties = new Properties();
-//            properties.load(is);
-            driverClass = "com.mysql.jdbc.Driver";//properties.getProperty("driver");
-            jdbcUrl = "jdbc:mysql://localhost:3306/jsb?useUnicode=true&characterEncoding=utf8";//properties.getProperty("jdbcUrl");
-            user = "root";//properties.getProperty("user");
-            password = "root";//properties.getProperty("password");
+            InputStream is = JDBCUtils.class.getClassLoader().getResourceAsStream("db.properties");
+            Properties properties = new Properties();
+            properties.load(is);
+            driverClass = properties.getProperty("driver");
+            jdbcUrl = properties.getProperty("jdbcUrl");
+            user = properties.getProperty("user");
+            password = properties.getProperty("password");
+
+//            driverClass = "com.mysql.jdbc.Driver";//properties.getProperty("driver");
+//            jdbcUrl = "jdbc:mysql://localhost:3306/jsb?useUnicode=true&characterEncoding=utf8";//properties.getProperty("jdbcUrl");
+//            user = "root";//properties.getProperty("user");
+//            password = "root";//properties.getProperty("password");
+
             //注册驱动程序
             Class.forName(driverClass);
             //实际应该这样写(由于对应的应用程序中有一个对应的静态代码块，自动回将驱动的类对象进行驱动加载)
@@ -91,6 +101,8 @@ public class JDBCUtils {
 
             conn = DriverManager.getConnection(jdbcUrl, user, password);
 
+        } catch (IOException e) {
+            e.printStackTrace();
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
