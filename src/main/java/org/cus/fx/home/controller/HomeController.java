@@ -60,6 +60,11 @@ public class HomeController {
         new SpglController().spgl(bodys, 0);
     }
 
+    @FXML
+    private void ddgl() {
+        new SpglController().spgl(bodys, 0);
+    }
+
     public static String getUsername() {
         return username;
     }

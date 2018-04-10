@@ -20,6 +20,8 @@
                   <Insets top="10.0" />
                </VBox.margin>
             </Button>
+            <Button mnemonicParsing="false" onAction="#ddgl" prefHeight="23.0" prefWidth="97.0" styleClass="menus" text="订单管理">
+            </Button>
             <Button mnemonicParsing="false" onAction="#grzl" prefHeight="23.0" prefWidth="96.0" styleClass="menus" text="个人资料">
                <VBox.margin>
                   <Insets top="1.0" />

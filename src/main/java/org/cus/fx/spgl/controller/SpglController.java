@@ -1,6 +1,5 @@
 package org.cus.fx.spgl.controller;
 
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -20,7 +19,9 @@ import org.cus.fx.util.AlertUtil;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author ld
@@ -31,6 +32,7 @@ import java.util.List;
 public class SpglController {
 
     static Pane pane_lout;
+    static String spid;
 
     public void spgl(Pane pane, int page) {
         pane_lout = pane;
@@ -47,13 +49,6 @@ public class SpglController {
             new SpglController().add(o, pane);
         });
         pane.getChildren().add(button);
-
-        Button button5 = new Button("修改");
-        button5.setLayoutX(40);
-//        button4.setOnAction(o -> {
-//            new SpglController().add(o, pane);
-//        });
-        pane.getChildren().add(button5);
 
         Button button2 = new Button("上一页");
         button2.setLayoutX(92);
@@ -153,10 +148,31 @@ public class SpglController {
             };
             return cell;
         });
+        TableColumn column12 = new TableColumn("操作");
+//        禁用排序
+        column12.setSortable(true);
+        column12.setCellFactory((col) -> {
+            TableCell<SpglModel, String> cell = new TableCell<SpglModel, String>() {
+                @Override
+                public void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    this.setText(null);
+                    this.setGraphic(null);
+                    if (!empty) {
+                        Button button = new Button("修改");
+                        button.setOnAction(o -> {
+                            new SpglController().update(o, pane_lout, this.getTableView().getItems().get(this.getIndex()));
+                        });
+                        this.setGraphic(button);
+                    }
+                }
+            };
+            return cell;
+        });
 
 //        加载数据
         tableView.setItems(data);
-        tableView.getColumns().addAll(column1, column2, column3, column4, column5, column6, column7, column8, column9, column10, column11);
+        tableView.getColumns().addAll(column1, column2, column3, column4, column5, column6, column7, column8, column9, column10, column11,column12);
         pane.getChildren().add(tableView);
     }
 
@@ -302,7 +318,7 @@ public class SpglController {
         HBox k3 = (HBox) vBox.getChildren().get(2);
         ChoiceBox choiceBox1 = (ChoiceBox) k3.getChildren().get(1);
         String s1 = (String) choiceBox1.getValue();
-        model.setSxj(s1.equals("否") ? 0: 1);
+        model.setSxj(s1.equals("否") ? 0 : 1);
         ChoiceBox choiceBox2 = (ChoiceBox) k3.getChildren().get(3);
         String s2 = (String) choiceBox2.getValue();
         model.setLm(s2);
@@ -400,5 +416,144 @@ public class SpglController {
 
         vBox.getChildren().addAll(hBox);
         return vBox;
+    }
+
+    private void update(ActionEvent event, Pane pane, SpglModel model) {
+        pane.getChildren().clear();
+        spid = model.getUuid();
+        List<List<String>> lists = new ArrayList<>();
+        List<String> list = new ArrayList<>();
+        list.add("商品名称]"+model.getCname());
+        list.add("商品价格]"+model.getJg());
+        list.add("商品单位]"+model.getDw());
+        list.add("商品规格]"+model.getGe());
+        lists.add(list);
+        List<String> list2 = new ArrayList<>();
+        list2.add("商品品牌]"+model.getPp());
+        list2.add("商品详情]"+model.getXq());
+        list2.add("商品数量]"+model.getSl());
+        lists.add(list2);
+        VBox vBox = update_h(lists,model);
+        pane.getChildren().add(vBox);
+    }
+
+    private VBox update_h(List<List<String>> names,SpglModel model) {
+        VBox vBox = new VBox();
+        vBox.setPrefWidth(910);
+        vBox.setPrefHeight(610);
+        names.forEach(k -> {
+            HBox hBox = new HBox();
+            hBox.setPrefWidth(910);
+            hBox.setPrefHeight(20);
+            Insets insets = new Insets(15, 0, 0, 0);
+            hBox.setPadding(insets);
+            k.forEach((j) -> {
+                Label label = new Label();
+                label.setPrefWidth(60);
+                label.setPrefHeight(20);
+                label.setText(j.split("]")[0] + ":");
+                TextField textField = new TextField();
+                textField.setPrefWidth(160);
+                textField.setPrefHeight(20);
+                textField.setId(j);
+                textField.setText(j.split("]")[1] == null ? "" : j.split("]")[1]);
+                hBox.getChildren().addAll(label, textField);
+            });
+            vBox.getChildren().add(hBox);
+        });
+        HBox hBox = new HBox();
+        hBox.setPrefWidth(910);
+        hBox.setPrefHeight(20);
+        Insets insets = new Insets(15, 0, 0, 0);
+        hBox.setPadding(insets);
+
+        Label label = new Label();
+        label.setPrefWidth(60);
+        label.setPrefHeight(20);
+        label.setText("是否下架:");
+        ChoiceBox<String> choiceBox1 = new ChoiceBox<>(FXCollections.observableArrayList(
+                "是", "否"));
+        choiceBox1.setValue(model.getSxj()==0 ? "否" : "是");
+        choiceBox1.setPrefHeight(20);
+        choiceBox1.setId("是否下架");
+        hBox.getChildren().addAll(label, choiceBox1);
+
+        Label label2 = new Label();
+        label2.setPrefWidth(60);
+        label2.setPrefHeight(20);
+        label2.setText("商品分类:");
+        ChoiceBox<String> choiceBox2 = new ChoiceBox<>(FXCollections.observableArrayList(
+                "生疏", "调料", "水产", "烟酒", "其它"));
+        choiceBox2.setValue(model.getLm());
+        choiceBox2.setPrefHeight(20);
+        choiceBox2.setId("商品分类");
+        hBox.getChildren().addAll(label2, choiceBox2);
+
+        Label label3 = new Label();
+        label3.setPrefWidth(60);
+        label3.setPrefHeight(20);
+        label3.setText("商品图片:");
+        ImageView image = new ImageView("/image/rw.jpg");
+        image.setFitHeight(60);
+        image.setFitWidth(60);
+        hBox.getChildren().addAll(label3, image);
+
+        Button button = new Button();
+        button.setPrefWidth(60);
+        button.setPrefHeight(20);
+        button.setText("确定");
+        button.setOnAction(o -> {
+            int i = new SpglController().updateData(o, vBox);
+            AlertUtil alertUtil = new AlertUtil();
+            if (i > 0) {
+                alertUtil.f_alert_informationDialog("通知", "成功");
+                new SpglController().spgl(pane_lout, 0);
+            } else
+                alertUtil.f_alert_informationDialog("警告", "失败");
+        });
+        Button button2 = new Button();
+        button2.setPrefWidth(60);
+        button2.setPrefHeight(20);
+        button2.setText("返回");
+        button2.setOnAction(o -> {
+            new SpglController().spgl(pane_lout, 0);
+        });
+        hBox.getChildren().addAll(button, button2);
+
+        vBox.getChildren().addAll(hBox);
+        return vBox;
+    }
+
+    private int updateData(ActionEvent event, VBox vBox) {
+        SpglModel model = new SpglModel();
+        model.setUuid(spid);
+        HBox k1 = (HBox) vBox.getChildren().get(0);
+        TextField textField11 = (TextField) k1.getChildren().get(1);
+        model.setCname(textField11.getText());
+        TextField textField12 = (TextField) k1.getChildren().get(3);
+        model.setJg(Double.parseDouble(textField12.getText()));
+        TextField textField13 = (TextField) k1.getChildren().get(5);
+        model.setDw(textField13.getText());
+        TextField textField14 = (TextField) k1.getChildren().get(7);
+        model.setGe(textField14.getText());
+
+        HBox k2 = (HBox) vBox.getChildren().get(1);
+        TextField textField21 = (TextField) k2.getChildren().get(1);
+        model.setPp(textField21.getText());
+        TextField textField22 = (TextField) k2.getChildren().get(3);
+        model.setXq(textField22.getText());
+        TextField textField23 = (TextField) k2.getChildren().get(5);
+        model.setSl(Integer.parseInt(textField23.getText()));
+
+        HBox k3 = (HBox) vBox.getChildren().get(2);
+        ChoiceBox choiceBox1 = (ChoiceBox) k3.getChildren().get(1);
+        String s1 = (String) choiceBox1.getValue();
+        model.setSxj(s1.equals("否") ? 0 : 1);
+        ChoiceBox choiceBox2 = (ChoiceBox) k3.getChildren().get(3);
+        String s2 = (String) choiceBox2.getValue();
+        model.setLm(s2);
+
+        SpglService jsbService = new SpglServiceImpl();
+        return jsbService.update(model);
     }
 }

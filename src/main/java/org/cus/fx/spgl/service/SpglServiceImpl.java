@@ -31,7 +31,7 @@ public class SpglServiceImpl implements SpglService {
                 + model.getXq() + "','"
                 + model.getXl() + "','"
                 + model.getBusid() + "',"
-                + model.getSl()+",'"
+                + model.getSl() + ",'"
                 + model.getLm() + "',"
                 + model.getSxj() + ")");
         return dao.data(sql.toString());
@@ -39,7 +39,14 @@ public class SpglServiceImpl implements SpglService {
 
     @Override
     public int update(SpglModel model) {
-        return 0;
+        SpglDao dao = new SpglDaoImpl();
+        StringJoiner sql = new StringJoiner("");
+        sql.add("update commodity_table set cname='" + model.getCname() + "',jg=" + model.getJg() + ",dw='"
+                + model.getDw() + "',ge='" + model.getGe() + "',zt='" + model.getZt() + "',pp='" + model.getPp()
+                + "',xq='" + model.getXq() + "',xl='" + model.getXl() + "',busid='" + model.getBusid() + "',sl=" + model.getSl()
+                + ",lm='" + model.getLm() + "',sxj=" + model.getSxj() + "");
+        sql.add(" where uuid = '" + model.getUuid() + "'");
+        return dao.data(sql.toString());
     }
 
     @Override
