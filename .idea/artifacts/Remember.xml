@@ -14,7 +14,7 @@
     </properties>
     <root id="root">
       <element id="archive" name="Remember.jar">
-        <element id="module-output" name="Remember" />
+        <element id="module-output" name="CusBack" />
       </element>
       <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.6.0" />
       <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-core:2.6.4" />
