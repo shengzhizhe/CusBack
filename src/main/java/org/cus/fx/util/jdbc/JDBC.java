@@ -45,7 +45,7 @@ public class JDBC {
             int result = ps.executeUpdate();
             return result;
         } catch (Exception e) {
-            System.out.println("出现异常1=" + e.toString());
+            e.printStackTrace();
             return 0;
         } finally {
             JDBCUtils.release(ps, conn);

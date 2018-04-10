@@ -15,7 +15,7 @@
       <VBox prefHeight="615.0" prefWidth="89.0" style="-fx-background-color: #ccc;">
          <children>
             <Button fx:id="logout_button" mnemonicParsing="false" onAction="#logout" prefHeight="31.0" prefWidth="94.0" styleClass="logout_button" text="注销" />
-            <Button mnemonicParsing="false" onAction="#spgl" prefHeight="23.0" prefWidth="97.0" styleClass="menus" text="待办事项">
+            <Button mnemonicParsing="false" onAction="#spgl" prefHeight="23.0" prefWidth="97.0" styleClass="menus" text="商品管理">
                <VBox.margin>
                   <Insets top="10.0" />
                </VBox.margin>

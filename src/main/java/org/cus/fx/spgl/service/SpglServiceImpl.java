@@ -21,12 +21,20 @@ public class SpglServiceImpl implements SpglService {
         StringJoiner sql = new StringJoiner("");
         sql.add("insert into commodity_table (uuid,cname,jg,dw,ge,zt,pp,xq,xl,busid,sl,lm,sxj)");
         sql.add(" values ");
-        sql.add("('" + GetUuid.getUUID() + "','" + model.getCname() + "','" + model.getJg() + "','"
-                + model.getDw() + "','" + model.getGe() + "'"
-                + model.getZt() + "','" + model.getPp() + "'"
-                + model.getXq() + "','" + model.getXl() + "'"
-                + model.getBusid() + "','" + model.getSl() + "'"
-                + model.getLm() + "','" + model.getSxj() + "')");
+        sql.add("('" + GetUuid.getUUID() + "','"
+                + model.getCname() + "',"
+                + model.getJg() + ",'"
+                + model.getDw() + "','"
+                + model.getGe() + "','"
+                + model.getZt() + "','"
+                + model.getPp() + "','"
+                + model.getXq() + "','"
+                + model.getXl() + "','"
+                + model.getBusid() + "',"
+                + model.getSl()+",'"
+                + model.getLm() + "',"
+                + model.getSxj() + ")");
+        System.out.println(sql.toString());
         return dao.data(sql.toString());
     }
 

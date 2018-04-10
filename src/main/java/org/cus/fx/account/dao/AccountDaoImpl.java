@@ -29,7 +29,7 @@ public class AccountDaoImpl implements AccountDao {
             int result = ps.executeUpdate();
             return result;
         } catch (Exception e) {
-            System.out.println("出现异常1=" + e.toString());
+            e.printStackTrace();
             return -1;
         } finally {
             JDBCUtils.release(ps, conn);
