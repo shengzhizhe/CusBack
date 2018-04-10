@@ -1,6 +1,6 @@
-package org.cus.fx.jsb.dao;
+package org.cus.fx.spgl.dao;
 
-import org.cus.fx.jsb.model.JsbModel;
+import org.cus.fx.spgl.model.SpglModel;
 import org.cus.fx.util.jdbc.JDBCUtils;
 
 import java.sql.Connection;
@@ -15,7 +15,7 @@ import java.util.List;
  * @table
  * @remarks
  */
-public class JsbDaoImpl implements JsbDao {
+public class SpglDaoImpl implements SpglDao {
     @Override
     public int data(String sql) {
         Connection conn = null;
@@ -37,8 +37,8 @@ public class JsbDaoImpl implements JsbDao {
     }
 
     @Override
-    public List<JsbModel> get(String sql) {
-        List<JsbModel> list = new ArrayList<>();
+    public List<SpglModel> get(String sql) {
+        List<SpglModel> list = new ArrayList<>();
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet result = null;
@@ -50,11 +50,20 @@ public class JsbDaoImpl implements JsbDao {
             //获取查询结果集
             result = ps.executeQuery();
             while (result.next()) {
-                JsbModel model = new JsbModel();
-                model.setUuid(result.getString(1));
-                model.setRq(result.getString(2));
-                model.setTitles(result.getString(3));
-                model.setBodys(result.getString(4));
+                SpglModel model = new SpglModel();
+                model.setUuid(result.getString("uuid"));
+                model.setCname(result.getString("cname"));
+                model.setJg(result.getDouble("jg"));
+                model.setDw(result.getString("dw"));
+                model.setGe(result.getString("ge"));
+                model.setZt(result.getString("zt"));
+                model.setPp(result.getString("pp"));
+                model.setXq(result.getString("xq"));
+                model.setXl(result.getString("xl"));
+                model.setBusid(result.getString("busid"));
+                model.setSl(result.getInt("sl"));
+                model.setLm(result.getString("lm"));
+                model.setSxj(result.getInt("sxj"));
                 list.add(model);
             }
             return list;

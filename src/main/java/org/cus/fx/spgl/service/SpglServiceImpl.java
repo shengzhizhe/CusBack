@@ -1,0 +1,54 @@
+package org.cus.fx.spgl.service;
+
+import org.cus.fx.spgl.dao.SpglDao;
+import org.cus.fx.spgl.dao.SpglDaoImpl;
+import org.cus.fx.spgl.model.SpglModel;
+import org.cus.fx.util.GetUuid;
+
+import java.util.List;
+import java.util.StringJoiner;
+
+/**
+ * @author ld
+ * @name
+ * @table
+ * @remarks
+ */
+public class SpglServiceImpl implements SpglService {
+    @Override
+    public int add(SpglModel model) {
+        SpglDao dao = new SpglDaoImpl();
+        StringJoiner sql = new StringJoiner("");
+        sql.add("insert into commodity_table (uuid,cname,jg,dw,ge,zt,pp,xq,xl,busid,sl,lm,sxj)");
+        sql.add(" values ");
+        sql.add("('" + GetUuid.getUUID() + "','" + model.getCname() + "','" + model.getJg() + "','"
+                + model.getDw() + "','" + model.getGe() + "'"
+                + model.getZt() + "','" + model.getPp() + "'"
+                + model.getXq() + "','" + model.getXl() + "'"
+                + model.getBusid() + "','" + model.getSl() + "'"
+                + model.getLm() + "','" + model.getSxj() + "')");
+        return dao.data(sql.toString());
+    }
+
+    @Override
+    public int update(SpglModel model) {
+        return 0;
+    }
+
+    @Override
+    public int delete(String id) {
+        SpglDao dao = new SpglDaoImpl();
+        StringJoiner sql = new StringJoiner("");
+        sql.add("delete from commodity_table where uuid = '" + id + "'");
+        return dao.data(sql.toString());
+    }
+
+    @Override
+    public List<SpglModel> get(String account, int page) {
+        page = page < 0 ? 0 : page * 15;
+        SpglDao dao = new SpglDaoImpl();
+        StringJoiner sql = new StringJoiner("");
+        sql.add("select * from commodity_table order by cname desc LIMIT " + page + ",15");
+        return dao.get(sql.toString());
+    }
+}

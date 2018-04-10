@@ -7,8 +7,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import org.cus.fx.home.button.GrzlButton;
-import org.cus.fx.home.button.SpglButton;
+import org.cus.fx.grzl.controller.GrzlController;
+import org.cus.fx.spgl.controller.SpglController;
 import org.cus.fx.util.AlertUtil;
 
 /**
@@ -19,10 +19,13 @@ import org.cus.fx.util.AlertUtil;
  */
 public class HomeController {
 
+    static String username;
+
     @FXML
     private Pane bodys;
 
-    public void init() throws Exception {
+    public void init(String account) throws Exception {
+        username = account;
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/home/home.fxml"));
 //        获取stage
         ObservableList<Stage> stages = FXRobotHelper.getStages();
@@ -49,11 +52,19 @@ public class HomeController {
 
     @FXML
     private void grzl() {
-        GrzlButton.grzl(bodys);
+        GrzlController.grzl(bodys);
     }
 
     @FXML
     private void spgl() {
-        new SpglButton().spgl(bodys,0);
+        new SpglController().spgl(bodys, 0);
+    }
+
+    public static String getUsername() {
+        return username;
+    }
+
+    public static void setUsername(String username) {
+        HomeController.username = username;
     }
 }

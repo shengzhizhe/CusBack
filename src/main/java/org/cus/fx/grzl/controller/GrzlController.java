@@ -1,4 +1,4 @@
-package org.cus.fx.home.button;
+package org.cus.fx.grzl.controller;
 
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -9,7 +9,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import org.cus.fx.api.util.ApiUtil;
+import org.cus.fx.account.model.AccountModel;
+import org.cus.fx.account.service.AccountService;
+import org.cus.fx.account.service.AccountServiceImpl;
+import org.cus.fx.home.controller.HomeController;
+import org.cus.fx.util.Base64Util;
 
 /**
  * @author ld
@@ -17,7 +21,7 @@ import org.cus.fx.api.util.ApiUtil;
  * @table
  * @remarks
  */
-public class GrzlButton {
+public class GrzlController {
     //    点击个人资料
     public static void grzl(Pane pane) {
         pane.getChildren().clear();
@@ -39,7 +43,13 @@ public class GrzlButton {
     private static void updatePWD(ActionEvent event, TextField textField) {
         String text = textField.getText();
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        if (text.equals("123")) {
+        AccountService accountService = new AccountServiceImpl();
+        AccountModel model = new AccountModel();
+        text = Base64Util.encode(text);
+        model.setPassword(text);
+        model.setUsername(HomeController.getUsername());
+        int i = accountService.update(model);
+        if (i > 0) {
             Pane pane = (Pane) textField.getParent().getParent();
             pane.getChildren().clear();
             alert.setTitle("提示");

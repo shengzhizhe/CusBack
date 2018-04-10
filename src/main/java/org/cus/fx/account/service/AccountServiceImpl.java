@@ -29,7 +29,7 @@ public class AccountServiceImpl implements AccountService {
     public int update(AccountModel model) {
         AccountDao dao = new AccountDaoImpl();
         StringJoiner sql = new StringJoiner("");
-        sql.add("update from account_table set password='" + model.getPassword()
+        sql.add("update account_table set password='" + model.getPassword()
                 + "' where username='" + model.getUsername() + "'");
         return dao.data(sql.toString());
     }

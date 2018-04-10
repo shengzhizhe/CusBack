@@ -50,7 +50,7 @@ public class IndexController {
                 if (s.equals(password)) {
                     try {
                         HomeController homeController = new HomeController();
-                        homeController.init();
+                        homeController.init(account);
                     } catch (Exception e) {
                         e.printStackTrace();
                         error.setText("跳转异常");
