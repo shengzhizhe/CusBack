@@ -1,1 +1,3 @@
 mvn install -Dmaven.test.skip=true
+
+javafxpackager -deploy -native image -appclass test.Test -srcdir E://test1 -outdir E://test2 -outfile test -name testName

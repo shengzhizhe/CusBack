@@ -24,8 +24,7 @@ public class App extends Application {
         primaryStage.show();
     }
 
-    //主页
-    public void index(String[] args) {
+    public static void main(String[] args) {
         launch(args);
     }
 }

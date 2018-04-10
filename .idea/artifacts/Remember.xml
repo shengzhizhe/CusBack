@@ -1,0 +1,37 @@
+<component name="ArtifactManager">
+  <artifact type="javafx" name="Remember">
+    <output-path>$PROJECT_DIR$/out/artifacts/Remember</output-path>
+    <properties id="javafx-properties">
+      <options>
+        <option name="appClass" value="org.cus.fx.App" />
+        <option name="description" value="" />
+        <option name="htmlPlaceholderId" value="" />
+        <option name="nativeBundle" value="all" />
+        <option name="title" value="" />
+        <option name="vendor" value="" />
+        <option name="version" value="" />
+      </options>
+    </properties>
+    <root id="root">
+      <element id="archive" name="Remember.jar">
+        <element id="module-output" name="Remember" />
+      </element>
+      <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.6.0" />
+      <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-core:2.6.4" />
+      <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.6.4" />
+      <element id="library" level="project" name="Maven: com.netflix.archaius:archaius-core:0.4.1" />
+      <element id="library" level="project" name="Maven: com.netflix.feign:feign-core:8.18.0" />
+      <element id="library" level="project" name="Maven: com.netflix.hystrix:hystrix-core:1.5.6" />
+      <element id="library" level="project" name="Maven: commons-configuration:commons-configuration:1.8" />
+      <element id="library" level="project" name="Maven: commons-lang:commons-lang:2.6" />
+      <element id="library" level="project" name="Maven: commons-logging:commons-logging:1.1.1" />
+      <element id="library" level="project" name="Maven: io.github.openfeign:feign-core:9.5.0" />
+      <element id="library" level="project" name="Maven: io.github.openfeign:feign-jackson:9.5.0" />
+      <element id="library" level="project" name="Maven: io.reactivex:rxjava:1.2.0" />
+      <element id="library" level="project" name="Maven: mysql:mysql-connector-java:5.1.44" />
+      <element id="library" level="project" name="Maven: org.hdrhistogram:HdrHistogram:2.1.9" />
+      <element id="library" level="project" name="Maven: org.jvnet:animal-sniffer-annotation:1.0" />
+      <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.0" />
+    </root>
+  </artifact>
+</component>
