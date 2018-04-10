@@ -34,7 +34,6 @@ public class SpglServiceImpl implements SpglService {
                 + model.getSl()+",'"
                 + model.getLm() + "',"
                 + model.getSxj() + ")");
-        System.out.println(sql.toString());
         return dao.data(sql.toString());
     }
 
