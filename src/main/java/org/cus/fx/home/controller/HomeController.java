@@ -4,6 +4,7 @@ import com.sun.javafx.robot.impl.FXRobotHelper;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
