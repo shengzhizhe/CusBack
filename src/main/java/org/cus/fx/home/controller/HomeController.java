@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.cus.fx.grzl.controller.GrzlController;
 import org.cus.fx.order.controller.OrderController;
@@ -40,7 +41,13 @@ public class HomeController {
         primaryStage.getScene().getStylesheets().clear();
         primaryStage.getScene().getStylesheets().add(getClass().getResource("/css/home/home.css").toExternalForm());
 //        窗口最大化
-        primaryStage.setMaximized(true);
+//        primaryStage.setMaximized(true);
+        Screen screen = Screen.getPrimary();
+        Rectangle2D bounds = screen.getVisualBounds();
+        primaryStage.setX(bounds.getMinX());
+        primaryStage.setY(bounds.getMinY());
+        primaryStage.setWidth(bounds.getWidth());
+        primaryStage.setHeight(bounds.getHeight());
 //        以下设置不要重复设置
         //        禁止窗口缩放
 //        primaryStage.setResizable(false);
