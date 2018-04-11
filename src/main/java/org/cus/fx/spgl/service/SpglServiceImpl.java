@@ -1,5 +1,6 @@
 package org.cus.fx.spgl.service;
 
+import org.cus.fx.order.service.serviceImpl.OrderServiceImpl;
 import org.cus.fx.spgl.dao.SpglDao;
 import org.cus.fx.spgl.dao.SpglDaoImpl;
 import org.cus.fx.spgl.model.SpglModel;
@@ -7,6 +8,7 @@ import org.cus.fx.util.GetUuid;
 
 import java.util.List;
 import java.util.StringJoiner;
+import java.util.logging.Logger;
 
 /**
  * @author ld
@@ -15,6 +17,9 @@ import java.util.StringJoiner;
  * @remarks
  */
 public class SpglServiceImpl implements SpglService {
+
+    private static Logger logger = Logger.getLogger(SpglServiceImpl.class.toString());
+
     @Override
     public int add(SpglModel model) {
         SpglDao dao = new SpglDaoImpl();
@@ -34,6 +39,7 @@ public class SpglServiceImpl implements SpglService {
                 + model.getSl() + ",'"
                 + model.getLm() + "',"
                 + model.getSxj() + ")");
+        logger.info(sql.toString());
         return dao.data(sql.toString());
     }
 
@@ -46,6 +52,7 @@ public class SpglServiceImpl implements SpglService {
                 + "',xq='" + model.getXq() + "',xl='" + model.getXl() + "',busid='" + model.getBusid() + "',sl=" + model.getSl()
                 + ",lm='" + model.getLm() + "',sxj=" + model.getSxj() + "");
         sql.add(" where uuid = '" + model.getUuid() + "'");
+        logger.info(sql.toString());
         return dao.data(sql.toString());
     }
 
@@ -54,6 +61,7 @@ public class SpglServiceImpl implements SpglService {
         SpglDao dao = new SpglDaoImpl();
         StringJoiner sql = new StringJoiner("");
         sql.add("delete from commodity_table where uuid = '" + id + "'");
+        logger.info(sql.toString());
         return dao.data(sql.toString());
     }
 
@@ -63,6 +71,7 @@ public class SpglServiceImpl implements SpglService {
         SpglDao dao = new SpglDaoImpl();
         StringJoiner sql = new StringJoiner("");
         sql.add("select * from commodity_table order by cname desc LIMIT " + page + ",15");
+        logger.info(sql.toString());
         return dao.get(sql.toString());
     }
 }

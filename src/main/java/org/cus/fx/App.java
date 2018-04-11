@@ -20,7 +20,7 @@ public class App extends Application {
 //        加载外部css
         scene.getStylesheets().add(getClass().getResource("/css/index.css").toExternalForm());
         primaryStage.setScene(scene);
-        primaryStage.setResizable(false);
+//        primaryStage.setResizable(false);
         primaryStage.show();
     }
 

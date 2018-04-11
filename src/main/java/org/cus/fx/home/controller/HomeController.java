@@ -8,6 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.cus.fx.grzl.controller.GrzlController;
+import org.cus.fx.order.controller.OrderController;
 import org.cus.fx.spgl.controller.SpglController;
 import org.cus.fx.util.AlertUtil;
 
@@ -50,19 +51,28 @@ public class HomeController {
         }
     }
 
+    /**
+     * 个人资料
+     */
     @FXML
     private void grzl() {
         GrzlController.grzl(bodys);
     }
 
+    /**
+     * 商品管理
+     */
     @FXML
     private void spgl() {
         new SpglController().spgl(bodys, 0);
     }
 
+    /**
+     * 订单管理
+     */
     @FXML
     private void ddgl() {
-        new SpglController().spgl(bodys, 0);
+        new OrderController().ddgl(bodys, 0);
     }
 
     public static String getUsername() {
