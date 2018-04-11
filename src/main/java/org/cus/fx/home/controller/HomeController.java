@@ -36,6 +36,8 @@ public class HomeController {
         primaryStage.getScene().setRoot(root);
         primaryStage.getScene().getStylesheets().clear();
         primaryStage.getScene().getStylesheets().add(getClass().getResource("/css/home/home.css").toExternalForm());
+//        窗口最大化
+        primaryStage.setMaximized(true);
         primaryStage.show();
     }
 

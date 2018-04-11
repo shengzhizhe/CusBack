@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static javafx.scene.layout.Region.USE_COMPUTED_SIZE;
+
 /**
  * @author ld
  * @name
@@ -73,8 +75,8 @@ public class SpglController {
 //        可以替换默认的表格无内容提示信息
 //        tableView.setPlaceholder();
         tableView.setEditable(true);
-        tableView.setPrefWidth(930);
-        tableView.setPrefHeight(590);
+        tableView.setPrefWidth(USE_COMPUTED_SIZE);
+        tableView.setPrefHeight(600);
         tableView.setLayoutY(20);
 
         TableColumn<SpglModel, String> column0 = new TableColumn<>("id");

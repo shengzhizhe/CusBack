@@ -14,6 +14,8 @@ import org.cus.fx.order.service.serviceImpl.OrderServiceImpl;
 
 import java.util.List;
 
+import static javafx.scene.layout.Region.USE_COMPUTED_SIZE;
+
 public class OrderController {
 
     static Pane pane_lout;
@@ -58,8 +60,8 @@ public class OrderController {
 //        可以替换默认的表格无内容提示信息
 //        tableView.setPlaceholder();
         tableView.setEditable(true);
-        tableView.setPrefWidth(930);
-        tableView.setPrefHeight(590);
+        tableView.setPrefWidth(USE_COMPUTED_SIZE);
+        tableView.setPrefHeight(600);
         tableView.setLayoutY(20);
 
         TableColumn<OrderModel, String> column0 = new TableColumn<>("id");
