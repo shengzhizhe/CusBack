@@ -138,6 +138,8 @@ public class OrderController {
         TableColumn column12 = new TableColumn("操作");
 //        禁用排序
         column12.setSortable(false);
+        if (zt != null && zt.equals("2"))
+            column12.setVisible(false);
         column12.setCellFactory((col) -> {
             TableCell<OrderModel, String> cell = new TableCell<OrderModel, String>() {
                 @Override
@@ -166,8 +168,7 @@ public class OrderController {
                                     if (i > 0) {
                                         alertUtil.f_alert_informationDialog("通知", "成功");
                                         ddgl(pane, 0, zt, lxqf);
-                                    }
-                                    else
+                                    } else
                                         alertUtil.f_alert_informationDialog("警告", "失败");
                                 }
                             });

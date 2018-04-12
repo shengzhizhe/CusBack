@@ -1,5 +1,5 @@
 .index{
-    -fx-background-image: url("login.jpg") no-repeat left center;
+    -fx-background-image: url("../image/login_backgroud.jpg") no-repeat left center;
     -fx-background-size:cover;
 }
 .login{
