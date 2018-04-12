@@ -21,9 +21,7 @@ import org.cus.fx.util.AlertUtil;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static javafx.scene.layout.Region.USE_COMPUTED_SIZE;
 
@@ -83,7 +81,7 @@ public class SpglController {
         Screen screen = Screen.getPrimary();
         Rectangle2D bounds = screen.getVisualBounds();
         tableView.setPrefWidth(bounds.getWidth() - 90);
-        tableView.setPrefHeight(bounds.getHeight()-60);
+        tableView.setPrefHeight(bounds.getHeight() - 60);
         tableView.setLayoutY(20);
 
         TableColumn<SpglModel, String> column0 = new TableColumn<>("id");
@@ -134,7 +132,7 @@ public class SpglController {
         column9.setCellValueFactory(new PropertyValueFactory<>("lm"));
         TableColumn<SpglModel, String> column10 = new TableColumn<>("是否下架");
         column10.setSortable(false);
-        column10.setCellValueFactory(new PropertyValueFactory<>("sxj"));
+        column10.setCellValueFactory(new PropertyValueFactory<>("sxj_string"));
 
         TableColumn column11 = new TableColumn("操作");
 //        禁用排序
@@ -192,7 +190,7 @@ public class SpglController {
 
 //        加载数据
         tableView.setItems(data);
-        tableView.getColumns().addAll(column1, column2, column3, column4, column5, column6, column7, column8, column9, column10, column11,column12);
+        tableView.getColumns().addAll(column1, column2, column3, column4, column5, column6, column7, column8, column9, column10, column11, column12);
         pane.getChildren().add(tableView);
     }
 
@@ -443,21 +441,21 @@ public class SpglController {
         spid = model.getUuid();
         List<List<String>> lists = new ArrayList<>();
         List<String> list = new ArrayList<>();
-        list.add("商品名称]"+model.getCname());
-        list.add("商品价格]"+model.getJg());
-        list.add("商品单位]"+model.getDw());
-        list.add("商品规格]"+model.getGe());
+        list.add("商品名称]" + model.getCname());
+        list.add("商品价格]" + model.getJg());
+        list.add("商品单位]" + model.getDw());
+        list.add("商品规格]" + model.getGe());
         lists.add(list);
         List<String> list2 = new ArrayList<>();
-        list2.add("商品品牌]"+model.getPp());
-        list2.add("商品详情]"+model.getXq());
-        list2.add("商品数量]"+model.getSl());
+        list2.add("商品品牌]" + model.getPp());
+        list2.add("商品详情]" + model.getXq());
+        list2.add("商品数量]" + model.getSl());
         lists.add(list2);
-        VBox vBox = update_h(lists,model);
+        VBox vBox = update_h(lists, model);
         pane.getChildren().add(vBox);
     }
 
-    private VBox update_h(List<List<String>> names,SpglModel model) {
+    private VBox update_h(List<List<String>> names, SpglModel model) {
         VBox vBox = new VBox();
         vBox.setPrefWidth(910);
         vBox.setPrefHeight(610);
@@ -493,7 +491,7 @@ public class SpglController {
         label.setText("是否下架:");
         ChoiceBox<String> choiceBox1 = new ChoiceBox<>(FXCollections.observableArrayList(
                 "是", "否"));
-        choiceBox1.setValue(model.getSxj()==0 ? "否" : "是");
+        choiceBox1.setValue(model.getSxj() == 0 ? "否" : "是");
         choiceBox1.setPrefHeight(20);
         choiceBox1.setId("是否下架");
         hBox.getChildren().addAll(label, choiceBox1);

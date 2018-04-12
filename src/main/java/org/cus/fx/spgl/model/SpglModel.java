@@ -37,12 +37,15 @@ public class SpglModel implements Serializable {
     //商品上架、下架 0:上架，1：下架
     private int sxj;
 
+    private String sxj_string;
+
     public int getSxj() {
         return sxj;
     }
 
     public void setSxj(int sxj) {
         this.sxj = sxj;
+        this.sxj_string = sxj == 0 ? "否" : "是";
     }
 
     public String getUuid() {
@@ -139,6 +142,10 @@ public class SpglModel implements Serializable {
 
     public void setLm(String lm) {
         this.lm = lm;
+    }
+
+    public String getSxj_string() {
+        return sxj_string;
     }
 
     public SpglModel() {

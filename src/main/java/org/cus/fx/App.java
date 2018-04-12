@@ -32,7 +32,7 @@ public class App extends Application {
         //设置窗口的图标.
         primaryStage.getIcons().add(new Image(getClass().getResource("/image/ico.jpg").toExternalForm()));
 //        禁止窗口缩放
-        primaryStage.setResizable(false);
+//        primaryStage.setResizable(false);
 //        设置窗口风格
 //        1) DECORATED——白色背景，带有最小化/最大化/关闭等有操作系统平台装饰（ 默认设置）
 //        2) UNDECORATED——白色背景，没有操作系统平台装饰
