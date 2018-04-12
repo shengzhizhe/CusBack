@@ -38,7 +38,7 @@ public class App extends Application {
 //        5) UNIFIED——有操作系统平台装饰，消除装饰和内容之间的边框，内容背景和边框背景一致，（但要视平台支持），可以通过javafx.application.Platform.isSupported(javafx.application.ConditionalFeature)判断
         primaryStage.initStyle(DECORATED);
 //        最小化，任务栏可见图标
-        primaryStage.setIconified(true);
+//        primaryStage.setIconified(true);
 //        始终显示在其他窗口之上
 //        stage.setAlwaysOnTop(true);
 //        显示

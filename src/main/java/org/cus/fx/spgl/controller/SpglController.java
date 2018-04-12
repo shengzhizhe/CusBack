@@ -50,6 +50,7 @@ public class SpglController {
         button.setOnAction(o -> {
             new SpglController().add(o, pane);
         });
+        button.getStyleClass().add("menus");
         pane.getChildren().add(button);
 
         Button button2 = new Button("上一页");
@@ -57,6 +58,7 @@ public class SpglController {
         button2.setOnAction(o -> {
             new SpglController().spgl(pane, Integer.parseInt(button4.getText()) - 1);
         });
+        button2.getStyleClass().add("menus");
         pane.getChildren().add(button2);
 
         Button button3 = new Button("下一页");
@@ -64,6 +66,7 @@ public class SpglController {
         button3.setOnAction(o -> {
             new SpglController().spgl(pane, Integer.parseInt(button4.getText()) + 1);
         });
+        button3.getStyleClass().add("menus");
         pane.getChildren().add(button3);
 
         SpglService jsbService = new SpglServiceImpl();
@@ -153,6 +156,7 @@ public class SpglController {
                                 new SpglController().spgl(pane, 0);
                             }
                         });
+                        button.getStyleClass().add("menus");
                         this.setGraphic(button);
                     }
                 }
@@ -174,6 +178,7 @@ public class SpglController {
                         button.setOnAction(o -> {
                             new SpglController().update(o, pane_lout, this.getTableView().getItems().get(this.getIndex()));
                         });
+                        button.getStyleClass().add("menus");
                         this.setGraphic(button);
                     }
                 }

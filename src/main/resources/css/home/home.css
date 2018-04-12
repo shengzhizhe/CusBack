@@ -2,7 +2,7 @@
     /*-fx-background-image: url("../img/backgroup.gif") no-repeat left center;
     -fx-background-size:cover;*/
 }
-.logout_button{
+button{
     -fx-color:red;
     /*设置圆角*/
     -fx-background-radius: 0;

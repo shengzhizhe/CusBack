@@ -19,7 +19,7 @@ public class OrderSpServiceImpl implements OrderSpService {
         StringJoiner sql = new StringJoiner("");
         sql.add("select o.uuid uuid,c.cname cname,o.spdj jg,c.dw dw,c.ge ge," +
                 "c.pp pp,o.spsl sl,o.spzj sxj from ordersp_table o left join commodity_table c on c.uuid = o.spid" +
-                " where o.uuid = '" + id + "'");
+                " where o.orderid = '" + id + "'");
         logger.info(sql.toString());
         return dao.query(sql.toString());
     }

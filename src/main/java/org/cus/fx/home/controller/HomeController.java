@@ -95,11 +95,19 @@ public class HomeController {
     }
 
     /**
-     * 订单管理
+     * 最新订单
      */
     @FXML
     private void ddgl() {
-        new OrderController().ddgl(bodys, 0);
+        new OrderController().ddgl(bodys, 0,"0",0);
+    }
+
+    /**
+     * 订单管理
+     */
+    @FXML
+    private void ddgl2() {
+        new OrderController().ddgl(bodys, 0,null,1);
     }
 
     public static String getUsername() {
