@@ -7,17 +7,24 @@ import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Screen;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import org.cus.fx.spgl.model.SpglModel;
 import org.cus.fx.spgl.service.SpglService;
 import org.cus.fx.spgl.service.SpglServiceImpl;
 import org.cus.fx.util.AlertUtil;
+import org.cus.fx.util.GetUuid;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -48,7 +55,7 @@ public class SpglController {
 
         Button button = new Button("新增");
         button.setOnAction(o -> {
-            new SpglController().add(o, pane);
+            this.add(o, pane);
         });
         button.getStyleClass().add("menus");
         pane.getChildren().add(button);
@@ -56,7 +63,7 @@ public class SpglController {
         Button button2 = new Button("上一页");
         button2.setLayoutX(45);
         button2.setOnAction(o -> {
-            new SpglController().spgl(pane, Integer.parseInt(button4.getText()) - 1);
+            this.spgl(pane, Integer.parseInt(button4.getText()) - 1);
         });
         button2.getStyleClass().add("menus");
         pane.getChildren().add(button2);
@@ -64,7 +71,7 @@ public class SpglController {
         Button button3 = new Button("下一页");
         button3.setLayoutX(100);
         button3.setOnAction(o -> {
-            new SpglController().spgl(pane, Integer.parseInt(button4.getText()) + 1);
+            this.spgl(pane, Integer.parseInt(button4.getText()) + 1);
         });
         button3.getStyleClass().add("menus");
         pane.getChildren().add(button3);
@@ -261,22 +268,13 @@ public class SpglController {
         button.setPrefWidth(70);
         button.setPrefHeight(25);
         button.setText("确定");
-//        button.setOnAction(o -> {
-//            int i = new SpglController().save(o, datePicker, textField2, textField3);
-//            AlertUtil alertUtil = new AlertUtil();
-//            if (i > 0) {
-//                alertUtil.f_alert_informationDialog("通知", "成功");
-//                new SpglController().spgl(pane, 0);
-//            } else
-//                alertUtil.f_alert_informationDialog("警告", "失败");
-//        });
 
         Button button2 = new Button();
         button2.setPrefWidth(70);
         button2.setPrefHeight(25);
         button2.setText("返回");
         button2.setOnAction(o -> {
-            new SpglController().spgl(pane, 0);
+            this.spgl(pane, 0);
         });
 
         HBox hBox4 = new HBox();
@@ -340,6 +338,8 @@ public class SpglController {
         ChoiceBox choiceBox2 = (ChoiceBox) k3.getChildren().get(3);
         String s2 = (String) choiceBox2.getValue();
         model.setLm(s2);
+        Button button = (Button) k3.getChildren().get(4);
+        model.setZt(button.getId());
 
         SpglService jsbService = new SpglServiceImpl();
         return jsbService.add(model);
@@ -401,25 +401,36 @@ public class SpglController {
         choiceBox2.setId("商品分类");
         hBox.getChildren().addAll(label2, choiceBox2);
 
-        Label label3 = new Label();
-        label3.setPrefWidth(60);
-        label3.setPrefHeight(20);
-        label3.setText("商品图片:");
-        ImageView image = new ImageView("/image/rw.jpg");
-        image.setFitHeight(60);
-        image.setFitWidth(60);
-        hBox.getChildren().addAll(label3, image);
+        ImageView image = new ImageView();
+        image.setFitHeight(80);
+        image.setFitWidth(80);
+        image.setImage(new Image("/image/tupian.jpg", true));
+        Button button_file = new Button();
+        button_file.setPrefWidth(80);
+        button_file.setPrefHeight(20);
+        button_file.setText("上传图片");
+        button_file.setOnAction(o -> {
+            try {
+                String s = this.addImg();
+                button_file.setId(s);
+                image.setImage(new Image("file:" + s, true));
+            } catch (Exception e) {
+                AlertUtil alertUtil = new AlertUtil();
+                alertUtil.f_alert_informationDialog("警告", "失败");
+            }
+        });
+        hBox.getChildren().addAll(button_file, image);
 
         Button button = new Button();
         button.setPrefWidth(60);
         button.setPrefHeight(20);
         button.setText("确定");
         button.setOnAction(o -> {
-            int i = new SpglController().save(o, vBox);
+            int i = this.save(o, vBox);
             AlertUtil alertUtil = new AlertUtil();
             if (i > 0) {
                 alertUtil.f_alert_informationDialog("通知", "成功");
-                new SpglController().spgl(pane_lout, 0);
+                this.spgl(pane_lout, 0);
             } else
                 alertUtil.f_alert_informationDialog("警告", "失败");
         });
@@ -428,7 +439,7 @@ public class SpglController {
         button2.setPrefHeight(20);
         button2.setText("返回");
         button2.setOnAction(o -> {
-            new SpglController().spgl(pane_lout, 0);
+            this.spgl(pane_lout, 0);
         });
         hBox.getChildren().addAll(button, button2);
 
@@ -507,25 +518,36 @@ public class SpglController {
         choiceBox2.setId("商品分类");
         hBox.getChildren().addAll(label2, choiceBox2);
 
-        Label label3 = new Label();
-        label3.setPrefWidth(60);
-        label3.setPrefHeight(20);
-        label3.setText("商品图片:");
-        ImageView image = new ImageView("/image/rw.jpg");
-        image.setFitHeight(60);
-        image.setFitWidth(60);
-        hBox.getChildren().addAll(label3, image);
+        String path = (model.getZt() != null && !model.getZt().trim().equals("")) ? "file:"+model.getZt() : "/image/tupian.jpg";
+        ImageView image = new ImageView(path);
+        image.setFitHeight(80);
+        image.setFitWidth(80);
+        Button button_file = new Button();
+        button_file.setPrefWidth(80);
+        button_file.setPrefHeight(20);
+        button_file.setText("上传图片");
+        button_file.setOnAction(o -> {
+            try {
+                String s = this.addImg();
+                button_file.setId(s);
+                image.setImage(new Image("file:" + s, true));
+            } catch (Exception e) {
+                AlertUtil alertUtil = new AlertUtil();
+                alertUtil.f_alert_informationDialog("警告", "失败");
+            }
+        });
+        hBox.getChildren().addAll(button_file, image);
 
         Button button = new Button();
         button.setPrefWidth(60);
         button.setPrefHeight(20);
         button.setText("确定");
         button.setOnAction(o -> {
-            int i = new SpglController().updateData(o, vBox);
+            int i = this.updateData(o, vBox);
             AlertUtil alertUtil = new AlertUtil();
             if (i > 0) {
                 alertUtil.f_alert_informationDialog("通知", "成功");
-                new SpglController().spgl(pane_lout, 0);
+                this.spgl(pane_lout, 0);
             } else
                 alertUtil.f_alert_informationDialog("警告", "失败");
         });
@@ -534,7 +556,7 @@ public class SpglController {
         button2.setPrefHeight(20);
         button2.setText("返回");
         button2.setOnAction(o -> {
-            new SpglController().spgl(pane_lout, 0);
+            this.spgl(pane_lout, 0);
         });
         hBox.getChildren().addAll(button, button2);
 
@@ -570,8 +592,34 @@ public class SpglController {
         ChoiceBox choiceBox2 = (ChoiceBox) k3.getChildren().get(3);
         String s2 = (String) choiceBox2.getValue();
         model.setLm(s2);
+        Button button = (Button) k3.getChildren().get(4);
+        model.setZt(button.getId());
 
         SpglService jsbService = new SpglServiceImpl();
         return jsbService.update(model);
+    }
+
+    private String addImg() throws Exception {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("选择文件");
+        File file = fileChooser.showOpenDialog(new Stage());
+        // 打开输入流
+        String fileName = file.getName();
+        String suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
+        FileInputStream fis = new FileInputStream(file.getPath());
+        // 打开输出流
+        String path = "D:/img/" + GetUuid.getUUID() + "." + suffix;
+        FileOutputStream fos = new FileOutputStream(path);
+        // 读取和写入信息
+        int len = 0;
+        // 创建一个字节数组，当做缓冲区
+        byte[] b = new byte[1024];
+        while ((len = fis.read(b)) != -1) {
+            fos.write(b);
+        }
+        // 关闭流  先开后关  后开先关
+        fos.close(); // 后开先关
+        fis.close(); // 先开后关
+        return path;
     }
 }
