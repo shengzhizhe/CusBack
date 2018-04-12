@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import static javafx.stage.StageStyle.DECORATED;
@@ -28,6 +29,8 @@ public class App extends Application {
 //        加载外部css
         scene.getStylesheets().add(getClass().getResource("/css/index.css").toExternalForm());
         primaryStage.setScene(scene);
+        //设置窗口的图标.
+        primaryStage.getIcons().add(new Image(getClass().getResource("/image/ico.jpg").toExternalForm()));
 //        禁止窗口缩放
         primaryStage.setResizable(false);
 //        设置窗口风格
