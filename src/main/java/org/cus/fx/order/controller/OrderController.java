@@ -18,18 +18,26 @@ import org.cus.fx.spgl.model.SpglModel;
 import org.cus.fx.util.AlertUtil;
 
 import java.util.List;
+import java.util.Timer;
 
 import static javafx.scene.layout.Region.USE_COMPUTED_SIZE;
 
 public class OrderController {
 
     static Pane pane_lout;
-    static String ddid;
+    static int pageNow;
+    static String zt2;
+    static int lxqf2;
+
     static TableView<SpglModel> tableView_body;
+    ObservableList<OrderModel> data;
     ObservableList<SpglModel> data2;
 
     public void ddgl(Pane pane, int page, String zt, int lxqf) {
         pane_lout = pane;
+        pageNow = page;
+        zt2 = zt;
+        lxqf2 = lxqf;
         pane.getChildren().clear();
         pane.setPrefWidth(USE_COMPUTED_SIZE);
         page = page > 0 ? page : 0;
@@ -81,9 +89,11 @@ public class OrderController {
         if (lxqf == 1)
             pane.getChildren().add(button4_3);
 
-        OrderService orderService = new OrderServiceImpl();
-        List<OrderModel> list = orderService.page(page, zt);
-        ObservableList<OrderModel> data = FXCollections.observableArrayList(list);
+//        由定时器实时刷新
+//        OrderService orderService = new OrderServiceImpl();
+//        List<OrderModel> list = orderService.page(page, zt);
+//        data = FXCollections.observableArrayList(list);
+        data = FXCollections.observableArrayList();
 
 //        声明table
         TableView<OrderModel> tableView = new TableView<>();
@@ -231,6 +241,9 @@ public class OrderController {
         tableView_body.setItems(data2);
         tableView_body.getColumns().addAll(column2_1, column2_0, column2_2, column2_3, column2_4, column2_5, column2_6, column2_7);
         pane.getChildren().add(tableView_body);
+
+        if (zt != null && zt.equals("0"))
+            sssx();
     }
 
     private void update(ActionEvent event, OrderModel model) {
@@ -250,6 +263,22 @@ public class OrderController {
         List<SpglModel> list = orderSpService.getByOrderId(id);
         data2.clear();
         data2.addAll(list);
+    }
+
+    //实时刷新
+    private void sssx() {
+        Timer timer = new Timer(true);
+        timer.schedule(
+                new java.util.TimerTask() {
+                    public void run() {
+                        OrderService orderService = new OrderServiceImpl();
+                        List<OrderModel> list = orderService.page(pageNow, zt2);
+                        System.out.println(list.size());
+                        data.clear();
+                        data.addAll(list);
+                        System.out.println("刷新数据");
+                    }
+                }, 0, 60 * 1000);
     }
 
     private int del(String id) {
