@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
-  <artifact type="javafx" name="Remember">
-    <output-path>$PROJECT_DIR$/out/artifacts/Remember</output-path>
+  <artifact type="javafx" name="jpt">
+    <output-path>$PROJECT_DIR$/out/artifacts/jpt</output-path>
     <properties id="javafx-properties">
       <options>
         <option name="appClass" value="org.cus.fx.App" />
