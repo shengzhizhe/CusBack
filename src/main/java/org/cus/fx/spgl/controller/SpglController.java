@@ -4,12 +4,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Screen;
 import javafx.util.StringConverter;
 import org.cus.fx.spgl.model.SpglModel;
 import org.cus.fx.spgl.service.SpglService;
@@ -54,7 +56,7 @@ public class SpglController {
         pane.getChildren().add(button);
 
         Button button2 = new Button("上一页");
-        button2.setLayoutX(92);
+        button2.setLayoutX(45);
         button2.setOnAction(o -> {
             new SpglController().spgl(pane, Integer.parseInt(button4.getText()) - 1);
         });
@@ -62,7 +64,7 @@ public class SpglController {
         pane.getChildren().add(button2);
 
         Button button3 = new Button("下一页");
-        button3.setLayoutX(144);
+        button3.setLayoutX(100);
         button3.setOnAction(o -> {
             new SpglController().spgl(pane, Integer.parseInt(button4.getText()) + 1);
         });
@@ -78,8 +80,10 @@ public class SpglController {
 //        可以替换默认的表格无内容提示信息
 //        tableView.setPlaceholder();
         tableView.setEditable(true);
-        tableView.setPrefWidth(USE_COMPUTED_SIZE);
-        tableView.setPrefHeight(600);
+        Screen screen = Screen.getPrimary();
+        Rectangle2D bounds = screen.getVisualBounds();
+        tableView.setPrefWidth(bounds.getWidth() - 90);
+        tableView.setPrefHeight(bounds.getHeight()-60);
         tableView.setLayoutY(20);
 
         TableColumn<SpglModel, String> column0 = new TableColumn<>("id");
