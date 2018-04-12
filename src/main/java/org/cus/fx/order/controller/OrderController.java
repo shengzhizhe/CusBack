@@ -146,16 +146,31 @@ public class OrderController {
                     this.setText(null);
                     this.setGraphic(null);
                     if (!empty) {
+                        AlertUtil alertUtil = new AlertUtil();
                         if (lxqf == 0) {
                             Button button = new Button("完成");
                             button.setOnAction(o -> {
-                                new OrderController().update(o, this.getTableView().getItems().get(this.getIndex()));
+                                boolean b = alertUtil.f_alert_confirmDialog("警告", "是否确定完成?");
+                                if (b)
+                                    new OrderController().update(o, this.getTableView().getItems().get(this.getIndex()));
                             });
                             button.getStyleClass().add("menus");
                             this.setGraphic(button);
                         } else {
                             Button button = new Button("删除");
                             button.getStyleClass().add("menus");
+                            button.setOnAction(o -> {
+                                boolean b = alertUtil.f_alert_confirmDialog("警告", "是否确定删除?");
+                                if (b) {
+                                    int i = new OrderController().del(this.getTableView().getItems().get(this.getIndex()).getUuid());
+                                    if (i > 0) {
+                                        alertUtil.f_alert_informationDialog("通知", "成功");
+                                        ddgl(pane, 0, zt, lxqf);
+                                    }
+                                    else
+                                        alertUtil.f_alert_informationDialog("警告", "失败");
+                                }
+                            });
                             this.setGraphic(button);
                         }
                     }
@@ -234,5 +249,10 @@ public class OrderController {
         List<SpglModel> list = orderSpService.getByOrderId(id);
         data2.clear();
         data2.addAll(list);
+    }
+
+    private int del(String id) {
+        OrderService orderService = new OrderServiceImpl();
+        return orderService.del(id);
     }
 }

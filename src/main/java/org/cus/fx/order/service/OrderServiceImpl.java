@@ -20,6 +20,8 @@ public class OrderServiceImpl implements OrderService {
         String s = "";
         if (zt != null && !zt.trim().equals(""))
             s = " where type = " + zt;
+        else
+            s = " where type!=2";
         sql.add("select * from order_table " + s + " order by cjtime desc LIMIT " + pageNow + ",15");
         logger.info(sql.toString());
         return dao.query(sql.toString());
@@ -48,7 +50,7 @@ public class OrderServiceImpl implements OrderService {
     public int del(String id) {
         OrderDao dao = new OrderDaoImpl();
         StringJoiner sql = new StringJoiner("");
-        sql.add("delete from order_table where uuid = '" + id + "'");
+        sql.add("update order_table set type=2 where uuid = '" + id + "'");
         logger.info(sql.toString());
         return dao.data(sql.toString());
     }
