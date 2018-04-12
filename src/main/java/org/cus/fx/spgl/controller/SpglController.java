@@ -84,6 +84,7 @@ public class SpglController {
         column0.setCellValueFactory(new PropertyValueFactory<>("uuid"));
 
         TableColumn<SpglModel, String> column1 = new TableColumn<>("序号");
+        column1.setSortable(false);
         column1.setCellFactory((col) -> {
             TableCell<SpglModel, String> cell = new TableCell<SpglModel, String>() {
                 @Override
@@ -101,28 +102,36 @@ public class SpglController {
         });
         TableColumn<SpglModel, String> column2 = new TableColumn<>("名称");
 //        指定当前列数据的标识，跟model属性保持一至
+        column2.setSortable(false);
         column2.setCellValueFactory(new PropertyValueFactory<>("cname"));
         TableColumn<SpglModel, String> column3 = new TableColumn<>("价格");
+        column3.setSortable(false);
         column3.setCellValueFactory(new PropertyValueFactory<>("jg"));
         TableColumn<SpglModel, String> column4 = new TableColumn<>("单位");
+        column4.setSortable(false);
         column4.setCellValueFactory(new PropertyValueFactory<>("dw"));
-
         TableColumn<SpglModel, String> column5 = new TableColumn<>("规格");
+        column5.setSortable(false);
         column5.setCellValueFactory(new PropertyValueFactory<>("ge"));
         TableColumn<SpglModel, String> column6 = new TableColumn<>("品牌");
+        column6.setSortable(false);
         column6.setCellValueFactory(new PropertyValueFactory<>("pp"));
         TableColumn<SpglModel, String> column7 = new TableColumn<>("详情");
+        column7.setSortable(false);
         column7.setCellValueFactory(new PropertyValueFactory<>("xq"));
         TableColumn<SpglModel, String> column8 = new TableColumn<>("数量");
+        column8.setSortable(false);
         column8.setCellValueFactory(new PropertyValueFactory<>("sl"));
         TableColumn<SpglModel, String> column9 = new TableColumn<>("分类");
+        column9.setSortable(false);
         column9.setCellValueFactory(new PropertyValueFactory<>("lm"));
         TableColumn<SpglModel, String> column10 = new TableColumn<>("是否下架");
+        column10.setSortable(false);
         column10.setCellValueFactory(new PropertyValueFactory<>("sxj"));
 
         TableColumn column11 = new TableColumn("操作");
 //        禁用排序
-        column11.setSortable(true);
+        column11.setSortable(false);
         column11.setCellFactory((col) -> {
             TableCell<SpglModel, String> cell = new TableCell<SpglModel, String>() {
                 @Override
@@ -152,7 +161,7 @@ public class SpglController {
         });
         TableColumn column12 = new TableColumn("操作");
 //        禁用排序
-        column12.setSortable(true);
+        column12.setSortable(false);
         column12.setCellFactory((col) -> {
             TableCell<SpglModel, String> cell = new TableCell<SpglModel, String>() {
                 @Override
@@ -464,7 +473,7 @@ public class SpglController {
             vBox.getChildren().add(hBox);
         });
         HBox hBox = new HBox();
-        hBox.setPrefWidth(910);
+        hBox.setPrefWidth(USE_COMPUTED_SIZE);
         hBox.setPrefHeight(20);
         Insets insets = new Insets(15, 0, 0, 0);
         hBox.setPadding(insets);

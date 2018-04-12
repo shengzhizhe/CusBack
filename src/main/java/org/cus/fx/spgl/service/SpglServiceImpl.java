@@ -1,6 +1,5 @@
 package org.cus.fx.spgl.service;
 
-import org.cus.fx.order.service.serviceImpl.OrderServiceImpl;
 import org.cus.fx.spgl.dao.SpglDao;
 import org.cus.fx.spgl.dao.SpglDaoImpl;
 import org.cus.fx.spgl.model.SpglModel;

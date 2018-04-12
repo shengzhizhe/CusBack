@@ -18,7 +18,5 @@ public interface OrderService {
 
     int update(OrderModel model);
 
-    int add(OrderModel model);
-
     int del(String id);
 }
