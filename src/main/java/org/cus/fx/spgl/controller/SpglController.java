@@ -26,6 +26,7 @@ import org.cus.fx.util.jdbc.Path;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -45,7 +46,7 @@ public class SpglController {
     static String spid;
 
     public void spgl(Pane pane, int page) {
-        pane_lout = pane;
+        setPane_lout(pane);
         pane.getChildren().clear();
 
         page = page > 0 ? page : 0;
@@ -519,7 +520,7 @@ public class SpglController {
         choiceBox2.setId("商品分类");
         hBox.getChildren().addAll(label2, choiceBox2);
 
-        String path = (model.getZt() != null && !model.getZt().trim().equals("")) ? "file:"+model.getZt() : "/image/tupian.jpg";
+        String path = (model.getZt() != null && !model.getZt().trim().equals("")) ? "file:" + model.getZt() : "/image/tupian.jpg";
         ImageView image = new ImageView(path);
         image.setFitHeight(80);
         image.setFitWidth(80);
@@ -601,26 +602,61 @@ public class SpglController {
     }
 
     private String addImg() throws Exception {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("选择文件");
-        File file = fileChooser.showOpenDialog(new Stage());
-        // 打开输入流
-        String fileName = file.getName();
-        String suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
-        FileInputStream fis = new FileInputStream(file.getPath());
-        // 打开输出流
-        String path = new Path().path()+ "/img/" + GetUuid.getUUID() + "." + suffix;
-        FileOutputStream fos = new FileOutputStream(path);
-        // 读取和写入信息
-        int len = 0;
-        // 创建一个字节数组，当做缓冲区
-        byte[] b = new byte[1024];
-        while ((len = fis.read(b)) != -1) {
-            fos.write(b);
+        FileInputStream fis = null;
+        FileOutputStream fos = null;
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("选择文件");
+            File file = fileChooser.showOpenDialog(new Stage());
+            if (file == null)
+                return "";
+            // 打开输入流
+            String fileName = file.getName();
+            String suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
+            fis = new FileInputStream(file);
+            // 打开输出流
+            String path = new Path().path() + "/img/" + GetUuid.getUUID() + "." + suffix;
+            fos = new FileOutputStream(path);
+            // 读取和写入信息
+            int len = 0;
+            // 创建一个字节数组，当做缓冲区
+            byte[] b = new byte[1024];
+            while ((len = fis.read(b)) != -1) {
+                fos.write(b);
+            }
+            return path;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (fos != null)
+                    fos.close();
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
+            try {
+                if (fis != null)
+                    fis.close();
+            }catch (Exception e2){
+                e2.printStackTrace();
+            }
         }
-        // 关闭流  先开后关  后开先关
-        fos.close(); // 后开先关
-        fis.close(); // 先开后关
-        return path;
+        return "异常";
+    }
+
+    public static Pane getPane_lout() {
+        return pane_lout;
+    }
+
+    public static void setPane_lout(Pane pane_lout) {
+        SpglController.pane_lout = pane_lout;
+    }
+
+    public static String getSpid() {
+        return spid;
+    }
+
+    public static void setSpid(String spid) {
+        SpglController.spid = spid;
     }
 }

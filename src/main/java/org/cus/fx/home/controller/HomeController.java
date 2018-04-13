@@ -30,7 +30,7 @@ public class HomeController {
     private Pane bodys;
 
     public void init(String account) throws Exception {
-        username = account;
+        setUsername(account);
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/home/home.fxml"));
 //        获取stage
         ObservableList<Stage> stages = FXRobotHelper.getStages();
@@ -157,4 +157,19 @@ public class HomeController {
         HomeController.username = username;
     }
 
+    public static int getI_i() {
+        return i_i;
+    }
+
+    public static void setI_i(int i_i) {
+        HomeController.i_i = i_i;
+    }
+
+    public Pane getBodys() {
+        return bodys;
+    }
+
+    public void setBodys(Pane bodys) {
+        this.bodys = bodys;
+    }
 }

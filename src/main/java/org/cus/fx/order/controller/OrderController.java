@@ -30,15 +30,15 @@ public class OrderController {
     static String zt2;
     static int lxqf2;
 
-    static TableView<SpglModel> tableView_body;
-    ObservableList<OrderModel> data;
-    ObservableList<SpglModel> data2;
+    static TableView<SpglModel> tableView_body = null;
+    ObservableList<OrderModel> data = null;
+    ObservableList<SpglModel> data2 = null;
 
     public void ddgl(Pane pane, int page, String zt, int lxqf) {
-        pane_lout = pane;
-        pageNow = page;
-        zt2 = zt;
-        lxqf2 = lxqf;
+        setPane_lout(pane);
+        setPageNow(page);
+        setZt2(zt);
+        setLxqf2(lxqf);
         pane.getChildren().clear();
         pane.setPrefWidth(USE_COMPUTED_SIZE);
         page = page > 0 ? page : 0;
@@ -196,7 +196,7 @@ public class OrderController {
         tableView.getColumns().addAll(column1, column7, column9, column6, column5, column12);
         pane.getChildren().add(tableView);
 
-        tableView_body = new TableView<>();
+        setTableView_body(new TableView<>());
 //        可以替换默认的表格无内容提示信息
         Label label = new Label("此订单没有查询到商品");
         tableView_body.setPlaceholder(label);
@@ -294,5 +294,61 @@ public class OrderController {
     private int del(String id) {
         OrderService orderService = new OrderServiceImpl();
         return orderService.del(id);
+    }
+
+    public static Pane getPane_lout() {
+        return pane_lout;
+    }
+
+    public static void setPane_lout(Pane pane_lout) {
+        OrderController.pane_lout = pane_lout;
+    }
+
+    public static int getPageNow() {
+        return pageNow;
+    }
+
+    public static void setPageNow(int pageNow) {
+        OrderController.pageNow = pageNow;
+    }
+
+    public static String getZt2() {
+        return zt2;
+    }
+
+    public static void setZt2(String zt2) {
+        OrderController.zt2 = zt2;
+    }
+
+    public static int getLxqf2() {
+        return lxqf2;
+    }
+
+    public static void setLxqf2(int lxqf2) {
+        OrderController.lxqf2 = lxqf2;
+    }
+
+    public static TableView<SpglModel> getTableView_body() {
+        return tableView_body;
+    }
+
+    public static void setTableView_body(TableView<SpglModel> tableView_body) {
+        OrderController.tableView_body = tableView_body;
+    }
+
+    public ObservableList<OrderModel> getData() {
+        return data;
+    }
+
+    public void setData(ObservableList<OrderModel> data) {
+        this.data = data;
+    }
+
+    public ObservableList<SpglModel> getData2() {
+        return data2;
+    }
+
+    public void setData2(ObservableList<SpglModel> data2) {
+        this.data2 = data2;
     }
 }
