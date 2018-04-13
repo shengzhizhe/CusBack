@@ -10,7 +10,7 @@ public class Path {
 
     public String path(){
         String s = System.getProperty("user.dir");
-        s = s.replaceAll("\\\\","/");
-        return s;
+        s = s.split(":")[0];
+        return s+":";
     }
 }
