@@ -243,7 +243,13 @@ public class OrderController {
         pane.getChildren().add(tableView_body);
 
         if (zt != null && zt.equals("0"))
-            sssx();
+            sssx(0);
+        else {
+            OrderService orderService = new OrderServiceImpl();
+            List<OrderModel> list = orderService.page(pageNow, zt2);
+            data.clear();
+            data.addAll(list);
+        }
     }
 
     private void update(ActionEvent event, OrderModel model) {
@@ -266,19 +272,19 @@ public class OrderController {
     }
 
     //实时刷新
-    private void sssx() {
+    public void sssx(int i) {
         Timer timer = new Timer(true);
         timer.schedule(
                 new java.util.TimerTask() {
                     public void run() {
                         OrderService orderService = new OrderServiceImpl();
-                        List<OrderModel> list = orderService.page(pageNow, zt2);
-                        System.out.println(list.size());
-                        data.clear();
-                        data.addAll(list);
-                        System.out.println("刷新数据");
+                        if (i == 0) {
+                            List<OrderModel> list = orderService.page(pageNow, zt2);
+                            data.clear();
+                            data.addAll(list);
+                        }
                     }
-                }, 0, 60 * 1000);
+                }, 0, 5 * 1000);
     }
 
     private int del(String id) {

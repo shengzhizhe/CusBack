@@ -10,6 +10,7 @@ import org.cus.fx.account.service.AccountService;
 import org.cus.fx.account.service.AccountServiceImpl;
 import org.cus.fx.home.controller.HomeController;
 import org.cus.fx.util.Base64Util;
+import org.cus.fx.util.runnable.Myrunnable;
 
 import java.util.List;
 
@@ -51,6 +52,15 @@ public class IndexController {
                     try {
                         HomeController homeController = new HomeController();
                         homeController.init(account);
+
+//                        Myrunnable myrunnable = new Myrunnable();
+//                        Thread thread = new Thread(myrunnable);
+//                        thread.start();
+//                        synchronized (thread) {
+//                            System.out.println("线程等待");
+//                            thread.wait(5000);
+//                            thread.interrupt();
+//                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                         error.setText("跳转异常");
