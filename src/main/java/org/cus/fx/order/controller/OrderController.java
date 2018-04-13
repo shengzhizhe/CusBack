@@ -283,10 +283,10 @@ public class OrderController {
                         if (list.size() > 0) {
                             orderService.update2();
                             new MP3Util().mp3("/mp3/xddts.mp3");
-                            List<OrderModel> list2 = orderService.page(pageNow, "0");
-                            data.clear();
-                            data.addAll(list2);
                         }
+                        List<OrderModel> list2 = orderService.page(pageNow, zt2);
+                        data.clear();
+                        data.addAll(list2);
                     }
                 }, 0, 30 * 1000);
     }
