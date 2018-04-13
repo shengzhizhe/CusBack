@@ -4,30 +4,16 @@ import com.sun.javafx.robot.impl.FXRobotHelper;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.cus.fx.grzl.controller.GrzlController;
 import org.cus.fx.order.controller.OrderController;
-import org.cus.fx.order.model.OrderModel;
-import org.cus.fx.order.service.OrderService;
-import org.cus.fx.order.service.OrderServiceImpl;
 import org.cus.fx.spgl.controller.SpglController;
 import org.cus.fx.util.AlertUtil;
 import org.cus.fx.util.runnable.Myrunnable;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.List;
 
 /**
  * @author ld
@@ -79,6 +65,15 @@ public class HomeController {
 
 //        显示
         primaryStage.show();
+
+//        Myrunnable myrunnable = new Myrunnable();
+//        Thread thread = new Thread(myrunnable);
+//        thread.start();
+//        synchronized (thread) {
+//            System.out.println("线程等待");
+//            thread.wait(5000);
+//        }
+
 //        //        消息提醒订单
 //        OrderService orderService = new OrderServiceImpl();
 //        List<OrderModel> list = orderService.page(0, "0");
