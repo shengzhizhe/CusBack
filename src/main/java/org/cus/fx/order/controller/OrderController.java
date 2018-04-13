@@ -16,6 +16,7 @@ import org.cus.fx.order.service.OrderSpService;
 import org.cus.fx.order.service.OrderSpServiceImpl;
 import org.cus.fx.spgl.model.SpglModel;
 import org.cus.fx.util.AlertUtil;
+import org.cus.fx.util.mp3.MP3Util;
 
 import java.util.List;
 import java.util.Timer;
@@ -282,9 +283,11 @@ public class OrderController {
                             List<OrderModel> list = orderService.page(pageNow, zt2);
                             data.clear();
                             data.addAll(list);
+//                            播放通知声音
+                            new MP3Util().mp3("/mp3/xddts.mp3");
                         }
                     }
-                }, 0, 5 * 1000);
+                }, 0, 30 * 1000);
     }
 
     private int del(String id) {
