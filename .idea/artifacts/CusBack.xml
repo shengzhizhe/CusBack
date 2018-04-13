@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
-  <artifact type="javafx" name="jpt">
-    <output-path>$PROJECT_DIR$/out/artifacts/jpt</output-path>
+  <artifact type="javafx" name="CusBack">
+    <output-path>$PROJECT_DIR$/out/artifacts/CusBack</output-path>
     <properties id="javafx-properties">
       <options>
         <option name="appClass" value="org.cus.fx.App" />
@@ -13,7 +13,7 @@
       </options>
     </properties>
     <root id="root">
-      <element id="archive" name="Remember.jar">
+      <element id="archive" name="CusBack.jar">
         <element id="module-output" name="CusBack" />
       </element>
       <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.6.0" />
