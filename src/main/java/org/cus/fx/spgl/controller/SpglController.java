@@ -530,7 +530,7 @@ public class SpglController {
             try {
                 String s = this.addImg();
                 button_file.setId(s);
-                image.setImage(new Image("file:" + s, true));
+                image.setImage(new Image(s, true));
             } catch (Exception e) {
                 AlertUtil alertUtil = new AlertUtil();
                 alertUtil.f_alert_informationDialog("警告", "失败");
@@ -608,7 +608,7 @@ public class SpglController {
         String suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
         FileInputStream fis = new FileInputStream(file.getPath());
         // 打开输出流
-        String path = "D:/img/" + GetUuid.getUUID() + "." + suffix;
+        String path = "/img/" + GetUuid.getUUID() + "." + suffix;
         FileOutputStream fos = new FileOutputStream(path);
         // 读取和写入信息
         int len = 0;
