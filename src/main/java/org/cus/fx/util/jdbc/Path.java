@@ -9,6 +9,8 @@ package org.cus.fx.util.jdbc;
 public class Path {
 
     public String path(){
-        return System.getProperty("user.dir");
+        String s = System.getProperty("user.dir");
+        s = s.replaceAll("\\\\","/");
+        return s;
     }
 }
