@@ -9,11 +9,11 @@ import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import org.cus.fx.ewm.controller.EwmController;
 import org.cus.fx.grzl.controller.GrzlController;
 import org.cus.fx.order.controller.OrderController;
 import org.cus.fx.spgl.controller.SpglController;
 import org.cus.fx.util.AlertUtil;
-import org.cus.fx.util.runnable.Myrunnable;
 
 /**
  * @author ld
@@ -147,6 +147,11 @@ public class HomeController {
     @FXML
     private void ddgl2() {
         new OrderController().ddgl(bodys, 0, null, 1);
+    }
+
+    @FXML
+    private void ewm() {
+        EwmController.ewm(bodys);
     }
 
     public static String getUsername() {

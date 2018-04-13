@@ -35,6 +35,8 @@
                         <Insets top="1.0"/>
                     </VBox.margin>
                 </Button>
+                <Button mnemonicParsing="false" onAction="#ewm" prefHeight="23.0" prefWidth="97.0" styleClass="menus"
+                        text="二维码"/>
             </children>
         </VBox>
         <Pane fx:id="bodys" layoutX="90.0" prefHeight="-Infinity" prefWidth="-Infinity"/>
