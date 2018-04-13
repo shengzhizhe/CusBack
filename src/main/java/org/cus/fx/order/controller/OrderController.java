@@ -279,12 +279,13 @@ public class OrderController {
                 new java.util.TimerTask() {
                     public void run() {
                         OrderService orderService = new OrderServiceImpl();
-                        if (i == 0) {
-                            List<OrderModel> list = orderService.page(pageNow, zt2);
-                            data.clear();
-                            data.addAll(list);
-//                            播放通知声音
+                        List<OrderModel> list = orderService.page(pageNow, "-1");
+                        if (list.size() > 0) {
+                            orderService.update2();
                             new MP3Util().mp3("/mp3/xddts.mp3");
+                            List<OrderModel> list2 = orderService.page(pageNow, "0");
+                            data.clear();
+                            data.addAll(list2);
                         }
                     }
                 }, 0, 30 * 1000);

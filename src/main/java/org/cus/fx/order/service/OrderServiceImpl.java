@@ -47,6 +47,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public int update2() {
+        OrderDao dao = new OrderDaoImpl();
+        StringJoiner sql = new StringJoiner("");
+        sql.add("update order_table set type=0 where type=-1");
+        logger.info(sql.toString());
+        return dao.data(sql.toString());
+    }
+
+    @Override
     public int del(String id) {
         OrderDao dao = new OrderDaoImpl();
         StringJoiner sql = new StringJoiner("");
