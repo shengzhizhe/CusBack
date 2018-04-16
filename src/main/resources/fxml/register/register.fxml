@@ -37,7 +37,7 @@
             </HBox>
             <HBox prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Button onAction="#register_data" mnemonicParsing="false" text="注册">
+                  <Button fx:id="res_res" onAction="#register_data" mnemonicParsing="false" text="注册">
                      <HBox.margin>
                         <Insets left="20.0" />
                      </HBox.margin>

@@ -7,6 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -46,6 +47,8 @@ public class IndexController {
     private TextField res_pwd;
     @FXML
     private Label res_error;
+    @FXML
+    private Button res_res;
 
     @FXML
     private void register(ActionEvent event) {
@@ -66,6 +69,7 @@ public class IndexController {
 
     @FXML
     private void register_data(ActionEvent event) {
+        res_res.setVisible(false);
         AlertUtil alertUtil = new AlertUtil();
         try {
             String account = res_acc.getText();
@@ -77,14 +81,19 @@ public class IndexController {
             AccountInterface anInterface = (AccountInterface) feignUtil.getInterface(null);
             ResponseResult<AccountModel> register = anInterface.register(model);
             if (register.isSuccess()) {
+                res_res.setVisible(true);
                 alertUtil.f_alert_informationDialog("提示", "成功");
                 register_login(event);
-            } else
+            } else {
+                res_res.setVisible(true);
                 alertUtil.f_alert_informationDialog("警告", register.getMessage());
+            }
         } catch (FeignException f) {
+            res_res.setVisible(true);
             logger.info(new LoggerUtil(IndexController.class, "reigster_data", "服务器通讯异常").toString());
             alertUtil.f_alert_informationDialog("警告", "服务器通讯异常");
         } catch (Exception e) {
+            res_res.setVisible(true);
             logger.info(new LoggerUtil(IndexController.class, "reigster_data", "注册失败").toString());
             alertUtil.f_alert_informationDialog("警告", "失败");
         }
