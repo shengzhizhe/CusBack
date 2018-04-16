@@ -15,6 +15,7 @@ import org.cus.fx.account.service.AccountService;
 import org.cus.fx.account.service.AccountServiceImpl;
 import org.cus.fx.home.controller.HomeController;
 import org.cus.fx.util.Base64Util;
+import org.cus.fx.util.jdbc.Path;
 
 /**
  * @author ld
@@ -24,8 +25,9 @@ import org.cus.fx.util.Base64Util;
  */
 public class EwmController {
     public static void ewm(Pane pane) {
+        String path = "file:"+new Path().path()+"/ewm/ewm.png";
         pane.getChildren().clear();
-        ImageView image = new ImageView("/ewm/ewm.png");
+        ImageView image = new ImageView(path);
         image.setFitHeight(200);
         image.setFitWidth(200);
         pane.getChildren().add(image);
