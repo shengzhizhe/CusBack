@@ -10,7 +10,7 @@ import org.cus.fx.util.ResponseResult;
 public interface AccountInterface {
 
     @RequestLine("GET /account/acc?account={account}")
-    ResponseResult<org.cus.fx.account.model.AccountModel> getAccount(@Param("account") String account);
+    ResponseResult<AccountModel> getAccount(@Param("account") String account);
 
     @RequestLine("GET /account/id?id={id}")
     ResponseResult<AccountModel> getById(@Param("id") String id);
@@ -19,4 +19,9 @@ public interface AccountInterface {
     @RequestLine("POST /account/account")
     @Body("model={model}")
     ResponseResult<AccountModel> register(@Param("model") AccountModel model);
+
+    @Headers("Content-Type: application/json;charset=UTF-8")
+    @RequestLine("POST /login/login")
+    @Body("model={model}")
+    ResponseResult<AccountModel> login(@Param("model") AccountModel model);
 }

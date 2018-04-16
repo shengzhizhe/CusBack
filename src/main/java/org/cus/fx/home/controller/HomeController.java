@@ -62,47 +62,8 @@ public class HomeController {
 //        primaryStage.setIconified(true);
 //        始终显示在其他窗口之上
 //        stage.setAlwaysOnTop(true);
-
 //        显示
         primaryStage.show();
-
-//        Myrunnable myrunnable = new Myrunnable();
-//        Thread thread = new Thread(myrunnable);
-//        thread.start();
-//        synchronized (thread) {
-//            System.out.println("线程等待");
-//            thread.wait(5000);
-//        }
-
-//        //        消息提醒订单
-//        OrderService orderService = new OrderServiceImpl();
-//        List<OrderModel> list = orderService.page(0, "0");
-//        if (list.size() > 0) {
-//            Stage window = new Stage();
-//            window.setTitle("title");
-//            //modality要使用Modality.APPLICATION_MODEL
-//            window.initModality(Modality.APPLICATION_MODAL);
-//            window.setMinWidth(300);
-//            window.setMinHeight(150);
-//            window.setX(bounds.getWidth() - 250);
-//            window.setY(bounds.getHeight() - 150);
-////            Button button = new Button("Close the window");
-////            button.setOnMouseClicked(new EventHandler<MouseEvent>() {
-////                @Override
-////                public void handle(MouseEvent event) {
-////                    window.close();
-////                }
-////            });
-//            Label label = new Label("您有订单未处理");
-//            VBox layout = new VBox(10);
-//            layout.getChildren().addAll(label);
-//            layout.setAlignment(Pos.CENTER);
-//            Scene scene = new Scene(layout);
-//            window.setScene(scene);
-//            //使用showAndWait()先处理这个窗口，而如果不处理，main中的那个窗口不能响应
-////            window.showAndWait();
-//            window.show();
-//        }
     }
 
     //    退出
