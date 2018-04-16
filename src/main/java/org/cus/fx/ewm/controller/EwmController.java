@@ -1,21 +1,12 @@
 package org.cus.fx.ewm.controller;
 
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import org.cus.fx.account.model.AccountModel;
-import org.cus.fx.account.service.AccountService;
-import org.cus.fx.account.service.AccountServiceImpl;
-import org.cus.fx.home.controller.HomeController;
-import org.cus.fx.util.Base64Util;
 import org.cus.fx.util.jdbc.Path;
+
+import java.io.InputStream;
+import java.util.Properties;
 
 /**
  * @author ld
@@ -25,11 +16,21 @@ import org.cus.fx.util.jdbc.Path;
  */
 public class EwmController {
     public static void ewm(Pane pane) {
-        String path = "file:"+new Path().path()+"/ewm/ewm.png";
-        pane.getChildren().clear();
-        ImageView image = new ImageView(path);
-        image.setFitHeight(200);
-        image.setFitWidth(200);
-        pane.getChildren().add(image);
+        try {
+            InputStream is = EwmController.class.getClassLoader().getResourceAsStream("ewm.properties");
+            Properties properties = new Properties();
+            properties.load(is);
+            String ewm_path = properties.getProperty("ewm_path");
+            String path = ewm_path;
+            pane.getChildren().clear();
+            ImageView image = new ImageView(path);
+            image.setFitHeight(200);
+            image.setFitWidth(200);
+            pane.getChildren().add(image);
+        } catch (Exception e) {
+            Label label = new Label("文件读取错误");
+            pane.getChildren().add(label);
+
+        }
     }
 }
