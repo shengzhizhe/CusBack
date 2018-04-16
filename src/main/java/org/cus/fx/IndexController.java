@@ -6,13 +6,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import org.cus.fx.account.model.AccountModel;
-import org.cus.fx.account.service.AccountService;
-import org.cus.fx.account.service.AccountServiceImpl;
+import org.cus.fx.api.AccountInterface;
 import org.cus.fx.home.controller.HomeController;
 import org.cus.fx.util.Base64Util;
-import org.cus.fx.util.runnable.Myrunnable;
-
-import java.util.List;
+import org.cus.fx.util.ResponseResult;
+import org.cus.fx.util.feign.FeignUtil;
 
 /**
  * @author ld
@@ -44,23 +42,16 @@ public class IndexController {
         if (account == null || password == null) {
             error.setText("账户密码不能为空");
         } else {
-            AccountService accountService = new AccountServiceImpl();
-            List<AccountModel> byAccount = accountService.getByAccount(account);
-            if (byAccount.size() > 0) {
-                String s = Base64Util.decode(byAccount.get(0).getPassword());
+            FeignUtil feignUtil = new FeignUtil();
+            AccountInterface anInterface = (AccountInterface) feignUtil.getInterface(null);
+            ResponseResult<AccountModel> result = anInterface.getAccount("xuesemofa@163.com");
+            AccountModel data = result.getData();
+            if (result.isSuccess()) {
+                String s = Base64Util.decode(data.getPassword());
                 if (s.equals(password)) {
                     try {
                         HomeController homeController = new HomeController();
                         homeController.init(account);
-
-//                        Myrunnable myrunnable = new Myrunnable();
-//                        Thread thread = new Thread(myrunnable);
-//                        thread.start();
-//                        synchronized (thread) {
-//                            System.out.println("线程等待");
-//                            thread.wait(5000);
-//                            thread.interrupt();
-//                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                         error.setText("跳转异常");

@@ -4,13 +4,13 @@ import feign.Body;
 import feign.Headers;
 import feign.Param;
 import feign.RequestLine;
-import org.cus.fx.api.model.AccountModel;
+import org.cus.fx.account.model.AccountModel;
 import org.cus.fx.util.ResponseResult;
 
 public interface AccountInterface {
 
     @RequestLine("GET /account/acc?account={account}")
-    ResponseResult<AccountModel> getAccount(@Param("account") String account);
+    ResponseResult<org.cus.fx.account.model.AccountModel> getAccount(@Param("account") String account);
 
     @RequestLine("GET /account/id?id={id}")
     ResponseResult<AccountModel> getById(@Param("id") String id);
