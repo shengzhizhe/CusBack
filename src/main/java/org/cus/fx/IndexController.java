@@ -17,6 +17,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.cus.fx.account.model.AccountModel;
 import org.cus.fx.api.AccountInterface;
+import org.cus.fx.api.SpglInterface;
 import org.cus.fx.home.controller.HomeController;
 import org.cus.fx.util.*;
 import org.cus.fx.util.mp3.MP3Util;
@@ -33,11 +34,10 @@ public class IndexController {
 
     private static Logger logger = Logger.getLogger(IndexController.class.toString());
 
-    AccountInterface anInterface = FeignUtil.feign()
+    private AccountInterface accountInterface = FeignUtil.feign()
             .target(AccountInterface.class, new FeignRequest().URL());
-
-    ObjectMapper objectMapper = new ObjectMapper();
-    MP3Util mp3Util = new MP3Util();
+    private ObjectMapper objectMapper = new ObjectMapper();
+    private MP3Util mp3Util = new MP3Util();
 
     //    名称必须和fx:id保持一至，类型也必须一至
     @FXML
@@ -89,7 +89,7 @@ public class IndexController {
             model.setTypes(1);
 //            java转json
             String json = objectMapper.writeValueAsString(model);
-            ResponseResult<String> register = anInterface.register(json);
+            ResponseResult<String> register = accountInterface.register(json);
             if (register.isSuccess()) {
                 res_res.setDisable(true);
                 alertUtil.f_alert_informationDialog("提示", "成功");
@@ -152,7 +152,7 @@ public class IndexController {
             model.setTypes(1);
             try {
                 String json = objectMapper.writeValueAsString(model);
-                ResponseResult<String> result = anInterface.login(json);
+                ResponseResult<String> result = accountInterface.login(json);
                 if (result.isSuccess()) {
 //                    mp3Util.mp3("/mp3/error.mp3");
                     HomeController homeController = new HomeController();

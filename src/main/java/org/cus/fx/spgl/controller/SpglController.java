@@ -1,5 +1,7 @@
 package org.cus.fx.spgl.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -16,12 +18,15 @@ import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
+import org.cus.fx.IndexController;
+import org.cus.fx.api.SpglInterface;
+import org.cus.fx.home.controller.HomeController;
 import org.cus.fx.spgl.model.SpglModel;
 import org.cus.fx.spgl.service.SpglService;
 import org.cus.fx.spgl.service.SpglServiceImpl;
-import org.cus.fx.util.AlertUtil;
-import org.cus.fx.util.GetUuid;
+import org.cus.fx.util.*;
 import org.cus.fx.util.jdbc.Path;
+import org.cus.fx.util.mp3.MP3Util;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,6 +36,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import static javafx.scene.layout.Region.USE_COMPUTED_SIZE;
 
@@ -41,6 +47,13 @@ import static javafx.scene.layout.Region.USE_COMPUTED_SIZE;
  * @remarks
  */
 public class SpglController {
+
+    private static Logger logger = Logger.getLogger(SpglController.class.toString());
+    private SpglInterface spglInterface = FeignUtil.feign()
+            .target(SpglInterface.class, new FeignRequest().URL());
+    private ObjectMapper objectMapper = new ObjectMapper();
+    private MP3Util mp3Util = new MP3Util();
+    private AlertUtil alertUtil = new AlertUtil();
 
     static Pane pane_lout;
     static String spid;
@@ -314,37 +327,59 @@ public class SpglController {
 
     private int save(ActionEvent event, VBox vBox) {
         SpglModel model = new SpglModel();
+        try {
+            HBox k1 = (HBox) vBox.getChildren().get(0);
+            TextField textField11 = (TextField) k1.getChildren().get(1);
+            model.setCname(textField11.getText());
+            TextField textField12 = (TextField) k1.getChildren().get(3);
+            model.setJg(Double.parseDouble(textField12.getText()));
+            TextField textField13 = (TextField) k1.getChildren().get(5);
+            model.setDw(textField13.getText());
+            TextField textField14 = (TextField) k1.getChildren().get(7);
+            model.setGe(textField14.getText());
 
-        HBox k1 = (HBox) vBox.getChildren().get(0);
-        TextField textField11 = (TextField) k1.getChildren().get(1);
-        model.setCname(textField11.getText());
-        TextField textField12 = (TextField) k1.getChildren().get(3);
-        model.setJg(Double.parseDouble(textField12.getText()));
-        TextField textField13 = (TextField) k1.getChildren().get(5);
-        model.setDw(textField13.getText());
-        TextField textField14 = (TextField) k1.getChildren().get(7);
-        model.setGe(textField14.getText());
+            HBox k2 = (HBox) vBox.getChildren().get(1);
+            TextField textField21 = (TextField) k2.getChildren().get(1);
+            model.setPp(textField21.getText());
+            TextField textField22 = (TextField) k2.getChildren().get(3);
+            model.setXq(textField22.getText());
+            TextField textField23 = (TextField) k2.getChildren().get(5);
+            model.setSl(Integer.parseInt(textField23.getText()));
 
-        HBox k2 = (HBox) vBox.getChildren().get(1);
-        TextField textField21 = (TextField) k2.getChildren().get(1);
-        model.setPp(textField21.getText());
-        TextField textField22 = (TextField) k2.getChildren().get(3);
-        model.setXq(textField22.getText());
-        TextField textField23 = (TextField) k2.getChildren().get(5);
-        model.setSl(Integer.parseInt(textField23.getText()));
-
-        HBox k3 = (HBox) vBox.getChildren().get(2);
-        ChoiceBox choiceBox1 = (ChoiceBox) k3.getChildren().get(1);
-        String s1 = (String) choiceBox1.getValue();
-        model.setSxj(s1.equals("否") ? 0 : 1);
-        ChoiceBox choiceBox2 = (ChoiceBox) k3.getChildren().get(3);
-        String s2 = (String) choiceBox2.getValue();
-        model.setLm(s2);
-        Button button = (Button) k3.getChildren().get(4);
-        model.setZt(button.getId());
-
-        SpglService jsbService = new SpglServiceImpl();
-        return jsbService.add(model);
+            HBox k3 = (HBox) vBox.getChildren().get(2);
+            ChoiceBox choiceBox1 = (ChoiceBox) k3.getChildren().get(1);
+            String s1 = (String) choiceBox1.getValue();
+            model.setSxj(s1.equals("否") ? 0 : 1);
+            ChoiceBox choiceBox2 = (ChoiceBox) k3.getChildren().get(3);
+            String s2 = (String) choiceBox2.getValue();
+            model.setLm(s2);
+            Button button = (Button) k3.getChildren().get(4);
+            model.setZt(button.getId());
+        } catch (Exception e) {
+            mp3Util.mp3("/mp3/error.mp3");
+            logger.info(new LoggerUtil(IndexController.class, "login", "数据转换错误").toString());
+            alertUtil.f_alert_informationDialog("警告", "数据转换错误");
+            return 0;
+        }
+        try {
+            String json = objectMapper.writeValueAsString(model);
+            ResponseResult<String> result = spglInterface.add(json + HomeController.getUsername());
+            if (result.isSuccess()) {
+                String s = json.substring(result.getData().lastIndexOf("}") + 1, result.getData().length());
+                HomeController.setUsername(s);
+                return 1;
+            } else {
+                mp3Util.mp3("/mp3/error.mp3");
+                HomeController.setUsername(result.getData());
+                return 0;
+            }
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            mp3Util.mp3("/mp3/error.mp3");
+            logger.info(new LoggerUtil(IndexController.class, "login", "数据转换错误").toString());
+            alertUtil.f_alert_informationDialog("警告", "数据转换错误");
+            return -1;
+        }
     }
 
     private int del(ActionEvent event, SpglModel model) {
@@ -417,6 +452,7 @@ public class SpglController {
                 button_file.setId(s);
                 image.setImage(new Image("file:" + s, true));
             } catch (Exception e) {
+                mp3Util.mp3("/mp3/error.mp3");
                 AlertUtil alertUtil = new AlertUtil();
                 alertUtil.f_alert_informationDialog("警告", "失败");
             }
@@ -433,8 +469,10 @@ public class SpglController {
             if (i > 0) {
                 alertUtil.f_alert_informationDialog("通知", "成功");
                 this.spgl(pane_lout, 0);
-            } else
+            } else {
+                mp3Util.mp3("/mp3/error.mp3");
                 alertUtil.f_alert_informationDialog("警告", "失败");
+            }
         });
         Button button2 = new Button();
         button2.setPrefWidth(60);
@@ -534,6 +572,7 @@ public class SpglController {
                 button_file.setId(s);
                 image.setImage(new Image("file:" + s, true));
             } catch (Exception e) {
+                mp3Util.mp3("/mp3/error.mp3");
                 AlertUtil alertUtil = new AlertUtil();
                 alertUtil.f_alert_informationDialog("警告", "失败");
             }
@@ -550,8 +589,10 @@ public class SpglController {
             if (i > 0) {
                 alertUtil.f_alert_informationDialog("通知", "成功");
                 this.spgl(pane_lout, 0);
-            } else
+            } else {
+                mp3Util.mp3("/mp3/error.mp3");
                 alertUtil.f_alert_informationDialog("警告", "失败");
+            }
         });
         Button button2 = new Button();
         button2.setPrefWidth(60);
@@ -637,7 +678,7 @@ public class SpglController {
             try {
                 if (fis != null)
                     fis.close();
-            }catch (Exception e2){
+            } catch (Exception e2) {
                 e2.printStackTrace();
             }
         }
