@@ -2,24 +2,16 @@
     -fx-background-image: url("../image/login_backgroud.jpg") no-repeat left center;
     -fx-background-size:cover;
 }
-.login{
-    /*-fx-text-fill:#7CFC00;
-    -fx-color:#CCCCCC;*/
-    -fx-background-image: url("loginbutton.jpg") no-repeat left center;
-    -fx-background-size:cover;
-    -fx-background-radius: 5.0px;
+.menu{
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-background-color:#00FFFF;
 }
 .reset{
-    -fx-text-fill:#FF4500;
-    -fx-color:#CCCCCC;
-}
-.welcome{
-    -fx-text-fill:#FF4500;
-    -fx-font-size:25;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-background-color:#FF4500;
 }
 .account_label,.password_label,.error{
     -fx-text-fill:#FF4500;
-}
-.login,.reset{
-    -fx-padding:5;
 }

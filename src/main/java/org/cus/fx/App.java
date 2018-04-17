@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import org.cus.fx.util.mp3.MP3Util;
 
 import static javafx.stage.StageStyle.DECORATED;
 
@@ -49,6 +50,9 @@ public class App extends Application {
         primaryStage.setScene(scene);
 //        显示
         primaryStage.show();
+//        欢迎语
+        MP3Util mp3Util = new MP3Util();
+        mp3Util.mp3("/mp3/welcome.mp3");
     }
 
     public static void main(String[] args) {
