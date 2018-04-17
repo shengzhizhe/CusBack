@@ -1,12 +1,8 @@
 package org.cus.fx;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.javafx.robot.impl.FXRobotHelper;
-import feign.Feign;
 import feign.FeignException;
-import feign.Request;
-import feign.Retryer;
-import feign.jackson.JacksonDecoder;
-import feign.jackson.JacksonEncoder;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -33,6 +29,11 @@ import java.util.logging.Logger;
 public class IndexController {
 
     private static Logger logger = Logger.getLogger(IndexController.class.toString());
+
+    AccountInterface anInterface = FeignUtil.feign()
+            .target(AccountInterface.class, new FeignRequest().URL());
+
+    ObjectMapper objectMapper = new ObjectMapper();
 
     //    名称必须和fx:id保持一至，类型也必须一至
     @FXML
@@ -78,10 +79,10 @@ public class IndexController {
             AccountModel model = new AccountModel();
             model.setUsername(account);
             model.setPassword(pwd);
-            AccountInterface anInterface = Feign.builder().encoder(new JacksonEncoder())
-                    .decoder(new JacksonDecoder())
-                    .target(AccountInterface.class, new FeignRequest().URL());
-            ResponseResult<AccountModel> register = anInterface.register(model);
+            model.setTypes(1);
+//            java转json
+            String json = objectMapper.writeValueAsString(model);
+            ResponseResult<String> register = anInterface.register(json);
             if (register.isSuccess()) {
                 res_res.setVisible(true);
                 alertUtil.f_alert_informationDialog("提示", "成功");
@@ -122,42 +123,26 @@ public class IndexController {
     }
 
     @FXML
-    private void login(ActionEvent event) {
+    private void login(ActionEvent event) throws Exception {
         String account = this.account.getText();
         String password = this.password.getText();
         if (account == null || password == null) {
             error.setText("账户密码不能为空");
         } else {
-            AccountInterface anInterface = Feign.builder()
-//                    编码方式
-                    .encoder(new JacksonEncoder())
-//                    解码方式
-                    .decoder(new JacksonDecoder())
-//                    超时时长
-                    .options(new Request.Options(1000, 3500))
-//                    重试策略
-                    .retryer(new Retryer.Default(5000, 5000, 3))
-                    .target(AccountInterface.class, new FeignRequest().URL());
             AccountModel model = new AccountModel();
             model.setUsername(account);
-            model.setPassword(password);
+            model.setPassword(Base64Util.encode(password));
             model.setTypes(1);
-            ResponseResult<AccountModel> result = anInterface.login(model);
-            AccountModel data = result.getData();
+            String json = objectMapper.writeValueAsString(model);
+            ResponseResult<String> result = anInterface.login(json);
             if (result.isSuccess()) {
-                String s = Base64Util.decode(data.getPassword());
-                if (s.equals(password)) {
-                    try {
-                        HomeController homeController = new HomeController();
-                        homeController.init(account);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        logger.info(new LoggerUtil(IndexController.class, "login", "跳转异常").toString());
-                        error.setText("跳转异常");
-                    }
-                } else {
-                    logger.info(new LoggerUtil(IndexController.class, "login", "账户密码错误").toString());
-                    error.setText("账户密码错误");
+                try {
+                    HomeController homeController = new HomeController();
+                    homeController.init(account);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    logger.info(new LoggerUtil(IndexController.class, "login", "跳转异常").toString());
+                    error.setText("跳转异常");
                 }
             } else {
                 logger.info(new LoggerUtil(IndexController.class, "login", result.getMessage()).toString());

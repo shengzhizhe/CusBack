@@ -1,3 +1,19 @@
 mvn install -Dmaven.test.skip=true
 
 javafxpackager -deploy -native image -appclass test.Test -srcdir E://test1 -outdir E://test2 -outfile test -name testName
+
+json参考
+https://blog.csdn.net/xiong9999/article/details/53170605
+https://blog.csdn.net/jay_1989/article/details/51262059
+String json = objectMapper.writeValueAsString(model);
+//json转java
+//            AccountBean acc = objectMapper.readValue(json, AccountBean.class);
+创建空白json并且赋值
+// 创建一个 node
+//            ObjectNode node = objectMapper.createObjectNode();
+//            node.put("username", account);
+//            node.put("password", pwd);
+//            node.put("types", 1);
+//            node.put("token", "");
+//            String json = objectMapper.writeValueAsString(node);
+//            System.out.println(json);
