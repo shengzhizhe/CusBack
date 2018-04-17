@@ -1,7 +1,12 @@
 package org.cus.fx;
 
 import com.sun.javafx.robot.impl.FXRobotHelper;
+import feign.Feign;
 import feign.FeignException;
+import feign.Request;
+import feign.Retryer;
+import feign.jackson.JacksonDecoder;
+import feign.jackson.JacksonEncoder;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -15,11 +20,7 @@ import javafx.stage.Stage;
 import org.cus.fx.account.model.AccountModel;
 import org.cus.fx.api.AccountInterface;
 import org.cus.fx.home.controller.HomeController;
-import org.cus.fx.util.AlertUtil;
-import org.cus.fx.util.Base64Util;
-import org.cus.fx.util.LoggerUtil;
-import org.cus.fx.util.ResponseResult;
-import org.cus.fx.util.feign.FeignUtil;
+import org.cus.fx.util.*;
 
 import java.util.logging.Logger;
 
@@ -63,7 +64,7 @@ public class IndexController {
 //        显示
             primaryStage.show();
         } catch (Exception e) {
-            logger.info(new LoggerUtil(IndexController.class, "reigster", e.getMessage()).toString());
+            logger.info(new LoggerUtil(IndexController.class, "reigster", "跳转异常").toString());
         }
     }
 
@@ -77,8 +78,9 @@ public class IndexController {
             AccountModel model = new AccountModel();
             model.setUsername(account);
             model.setPassword(pwd);
-            FeignUtil feignUtil = new FeignUtil();
-            AccountInterface anInterface = (AccountInterface) feignUtil.getInterface(null);
+            AccountInterface anInterface = Feign.builder().encoder(new JacksonEncoder())
+                    .decoder(new JacksonDecoder())
+                    .target(AccountInterface.class, new FeignRequest().URL());
             ResponseResult<AccountModel> register = anInterface.register(model);
             if (register.isSuccess()) {
                 res_res.setVisible(true);
@@ -90,8 +92,8 @@ public class IndexController {
             }
         } catch (FeignException f) {
             res_res.setVisible(true);
-            logger.info(new LoggerUtil(IndexController.class, "reigster_data", "服务器通讯异常").toString());
-            alertUtil.f_alert_informationDialog("警告", "服务器通讯异常");
+            logger.info(new LoggerUtil(IndexController.class, "reigster_data", f.getMessage()).toString());
+            alertUtil.f_alert_informationDialog("警告", f.getMessage());
         } catch (Exception e) {
             res_res.setVisible(true);
             logger.info(new LoggerUtil(IndexController.class, "reigster_data", "注册失败").toString());
@@ -126,8 +128,16 @@ public class IndexController {
         if (account == null || password == null) {
             error.setText("账户密码不能为空");
         } else {
-            FeignUtil feignUtil = new FeignUtil();
-            AccountInterface anInterface = (AccountInterface) feignUtil.getInterface(null);
+            AccountInterface anInterface = Feign.builder()
+//                    编码方式
+                    .encoder(new JacksonEncoder())
+//                    解码方式
+                    .decoder(new JacksonDecoder())
+//                    超时时长
+                    .options(new Request.Options(1000, 3500))
+//                    重试策略
+                    .retryer(new Retryer.Default(5000, 5000, 3))
+                    .target(AccountInterface.class, new FeignRequest().URL());
             AccountModel model = new AccountModel();
             model.setUsername(account);
             model.setPassword(password);
@@ -145,10 +155,14 @@ public class IndexController {
                         logger.info(new LoggerUtil(IndexController.class, "login", "跳转异常").toString());
                         error.setText("跳转异常");
                     }
-                } else
+                } else {
+                    logger.info(new LoggerUtil(IndexController.class, "login", "账户密码错误").toString());
                     error.setText("账户密码错误");
-            } else
+                }
+            } else {
+                logger.info(new LoggerUtil(IndexController.class, "login", result.getMessage()).toString());
                 error.setText(result.getMessage());
+            }
         }
     }
 }
