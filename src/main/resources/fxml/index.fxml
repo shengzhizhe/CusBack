@@ -57,7 +57,7 @@
                                                 <Insets right="15.0" />
                                             </HBox.margin>
                                         </Button>
-                                        <Button mnemonicParsing="false" onAction="#login" text="登录">
+                                        <Button fx:id="login_login" mnemonicParsing="false" onAction="#login" text="登录">
                                             <HBox.margin>
                                                 <Insets right="30.0" />
                                             </HBox.margin>

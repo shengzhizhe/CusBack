@@ -1,5 +1,6 @@
 package org.cus.fx;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.javafx.robot.impl.FXRobotHelper;
 import feign.FeignException;
@@ -51,6 +52,8 @@ public class IndexController {
     private Label res_error;
     @FXML
     private Button res_res;
+    @FXML
+    private Button login_login;
 
     @FXML
     private void register(ActionEvent event) {
@@ -71,7 +74,7 @@ public class IndexController {
 
     @FXML
     private void register_data(ActionEvent event) {
-        res_res.setVisible(false);
+        res_res.setDisable(true);
         AlertUtil alertUtil = new AlertUtil();
         try {
             String account = res_acc.getText();
@@ -84,21 +87,21 @@ public class IndexController {
             String json = objectMapper.writeValueAsString(model);
             ResponseResult<String> register = anInterface.register(json);
             if (register.isSuccess()) {
-                res_res.setVisible(true);
+                res_res.setDisable(true);
                 alertUtil.f_alert_informationDialog("提示", "成功");
                 register_login(event);
             } else {
-                res_res.setVisible(true);
                 alertUtil.f_alert_informationDialog("警告", register.getMessage());
+                res_res.setDisable(false);
             }
         } catch (FeignException f) {
-            res_res.setVisible(true);
             logger.info(new LoggerUtil(IndexController.class, "reigster_data", f.getMessage()).toString());
             alertUtil.f_alert_informationDialog("警告", f.getMessage());
+            res_res.setDisable(false);
         } catch (Exception e) {
-            res_res.setVisible(true);
             logger.info(new LoggerUtil(IndexController.class, "reigster_data", "注册失败").toString());
             alertUtil.f_alert_informationDialog("警告", "失败");
+            res_res.setDisable(false);
         }
     }
 
@@ -123,30 +126,51 @@ public class IndexController {
     }
 
     @FXML
-    private void login(ActionEvent event) throws Exception {
+    private void login(ActionEvent event) {
+        error.setStyle("-fx-background-color:red;");
+        login_login.setDisable(true);
+        login_login.setText("O");
         String account = this.account.getText();
         String password = this.password.getText();
         if (account == null || password == null) {
             error.setText("账户密码不能为空");
+            login_login.setDisable(true);
+            login_login.setText("登录");
         } else {
             AccountModel model = new AccountModel();
             model.setUsername(account);
             model.setPassword(Base64Util.encode(password));
             model.setTypes(1);
-            String json = objectMapper.writeValueAsString(model);
-            ResponseResult<String> result = anInterface.login(json);
-            if (result.isSuccess()) {
-                try {
+            try {
+                String json = objectMapper.writeValueAsString(model);
+                ResponseResult<String> result = anInterface.login(json);
+                if (result.isSuccess()) {
                     HomeController homeController = new HomeController();
                     homeController.init(account);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    logger.info(new LoggerUtil(IndexController.class, "login", "跳转异常").toString());
-                    error.setText("跳转异常");
+                } else {
+                    logger.info(new LoggerUtil(IndexController.class, "login", result.getMessage()).toString());
+                    error.setText(result.getMessage());
+                    login_login.setDisable(false);
+                    login_login.setText("登录");
                 }
-            } else {
-                logger.info(new LoggerUtil(IndexController.class, "login", result.getMessage()).toString());
-                error.setText(result.getMessage());
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                logger.info(new LoggerUtil(IndexController.class, "login", "数据转换错误").toString());
+                error.setText("数据转换错误");
+                login_login.setDisable(false);
+                login_login.setText("登录");
+            }catch (FeignException e) {
+                e.printStackTrace();
+                logger.info(new LoggerUtil(IndexController.class, "login", "远程服务器错误").toString());
+                error.setText("远程服务器错误");
+                login_login.setDisable(false);
+                login_login.setText("登录");
+            }catch (Exception e) {
+                e.printStackTrace();
+                logger.info(new LoggerUtil(IndexController.class, "login", "跳转错误").toString());
+                error.setText("跳转错误");
+                login_login.setDisable(false);
+                login_login.setText("登录");
             }
         }
     }
