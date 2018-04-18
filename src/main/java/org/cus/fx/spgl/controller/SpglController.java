@@ -60,6 +60,10 @@ public class SpglController {
     private static TableView<SpglModel> tableView = null;
 
     public void spgl(Pane pane, int page) {
+
+        Screen screen = Screen.getPrimary();
+        Rectangle2D bounds = screen.getVisualBounds();
+
         setPane_lout(pane);
         pane.getChildren().clear();
 
@@ -92,14 +96,14 @@ public class SpglController {
         button3.getStyleClass().add("menus");
         pane.getChildren().add(button3);
 
-//        声明table
-//        TableView<SpglModel> tableView = new TableView<>();
+        Label label = new Label("当前页数:" + page);
+        label.setLayoutX(bounds.getWidth() - 200);
+        pane.getChildren().add(label);
+
 //        可以替换默认的表格无内容提示信息
-//        tableView.setPlaceholder();
+//        tableView.setPlaceholder(label2);
         tableView = new TableView<>();
         tableView.setEditable(true);
-        Screen screen = Screen.getPrimary();
-        Rectangle2D bounds = screen.getVisualBounds();
         tableView.setPrefWidth(bounds.getWidth() - 90);
         tableView.setPrefHeight(bounds.getHeight() - 60);
         tableView.setLayoutY(20);
