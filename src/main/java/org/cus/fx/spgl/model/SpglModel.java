@@ -1,5 +1,7 @@
 package org.cus.fx.spgl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.io.Serializable;
 
 /**
@@ -8,6 +10,8 @@ import java.io.Serializable;
  * @table
  * @remarks
  */
+//忽略没有的字段
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SpglModel implements Serializable {
 
     //商品主键

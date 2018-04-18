@@ -14,10 +14,14 @@ import javafx.scene.media.MediaPlayer;
 public class MP3Util {
 
     public void mp3(String mp3Name) {
-        String url = getClass().getResource(mp3Name).toString();
-        Media media = new Media(url);
-        MediaPlayer player = new MediaPlayer(media);
-        player.setAutoPlay(true); //设置自动播放
-        player.setCycleCount(1); //设置循环播放次数
+//        是否打开错误提示音
+        boolean b = true;
+        if (b) {
+            String url = getClass().getResource(mp3Name).toString();
+            Media media = new Media(url);
+            MediaPlayer player = new MediaPlayer(media);
+            player.setAutoPlay(true); //设置自动播放
+            player.setCycleCount(1); //设置循环播放次数
+        }
     }
 }

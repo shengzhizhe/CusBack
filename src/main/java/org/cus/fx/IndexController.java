@@ -135,6 +135,7 @@ public class IndexController {
 
     @FXML
     private void login(ActionEvent event) {
+        error.setText(null);
         error.setTextFill(Color.RED);
         login_login.setDisable(true);
         login_login.setText("O");

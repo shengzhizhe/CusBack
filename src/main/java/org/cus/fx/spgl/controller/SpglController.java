@@ -1,7 +1,9 @@
 package org.cus.fx.spgl.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.RetryableException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -20,10 +22,7 @@ import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import org.cus.fx.IndexController;
 import org.cus.fx.api.SpglInterface;
-import org.cus.fx.home.controller.HomeController;
 import org.cus.fx.spgl.model.SpglModel;
-import org.cus.fx.spgl.service.SpglService;
-import org.cus.fx.spgl.service.SpglServiceImpl;
 import org.cus.fx.util.*;
 import org.cus.fx.util.jdbc.Path;
 import org.cus.fx.util.mp3.MP3Util;
@@ -57,12 +56,14 @@ public class SpglController {
 
     static Pane pane_lout;
     static String spid;
+    private static ObservableList<SpglModel> data = null;
+    private static TableView<SpglModel> tableView = null;
 
     public void spgl(Pane pane, int page) {
         setPane_lout(pane);
         pane.getChildren().clear();
 
-        page = page > 0 ? page : 0;
+        page = page > 0 ? page : 1;
         Button button4 = new Button(page + "");
         button4.setId("page");
         button4.setVisible(false);
@@ -91,14 +92,11 @@ public class SpglController {
         button3.getStyleClass().add("menus");
         pane.getChildren().add(button3);
 
-        SpglService jsbService = new SpglServiceImpl();
-        List<SpglModel> list = jsbService.get("", page);
-        ObservableList<SpglModel> data = FXCollections.observableArrayList(list);
-
 //        声明table
-        TableView<SpglModel> tableView = new TableView<>();
+//        TableView<SpglModel> tableView = new TableView<>();
 //        可以替换默认的表格无内容提示信息
 //        tableView.setPlaceholder();
+        tableView = new TableView<>();
         tableView.setEditable(true);
         Screen screen = Screen.getPrimary();
         Rectangle2D bounds = screen.getVisualBounds();
@@ -209,11 +207,42 @@ public class SpglController {
             };
             return cell;
         });
-
 //        加载数据
+        data = FXCollections.observableArrayList();
         tableView.setItems(data);
         tableView.getColumns().addAll(column1, column2, column3, column4, column5, column6, column7, column8, column9, column10, column11, column12);
         pane.getChildren().add(tableView);
+
+        datas(page);
+    }
+
+    private void datas(int page) {
+        data.clear();
+        ResponseResult<String> result = spglInterface.page(page, 15, StaticToken.getToken());
+        if (result.isSuccess()) {
+            String json = result.getData().substring(0, result.getData().lastIndexOf("]") + 1);
+            try {
+                List<SpglModel> beanList = objectMapper.readValue(json, new TypeReference<List<SpglModel>>() {
+                });
+                data.addAll(beanList);
+                String s = result.getData().substring(result.getData().lastIndexOf("]") + 1, result.getData().length());
+                StaticToken.setToken(s);
+            } catch (IOException e) {
+                e.printStackTrace();
+                mp3Util.mp3("/mp3/error.mp3");
+                logger.info(new LoggerUtil(IndexController.class, "spgl", "数据转换错误").toString());
+                alertUtil.f_alert_informationDialog("警告", "数据转换错误");
+            } catch (Exception e) {
+                e.printStackTrace();
+                mp3Util.mp3("/mp3/error.mp3");
+                logger.info(new LoggerUtil(IndexController.class, "spgl", "获取数据失败").toString());
+                alertUtil.f_alert_informationDialog("警告", "获取数据失败");
+            }
+        } else {
+            mp3Util.mp3("/mp3/error.mp3");
+            logger.info(new LoggerUtil(IndexController.class, "spgl", result.getMessage()).toString());
+            alertUtil.f_alert_informationDialog("警告", result.getMessage());
+        }
     }
 
     private void add2(ActionEvent event, Pane pane) {
@@ -363,16 +392,23 @@ public class SpglController {
         }
         try {
             String json = objectMapper.writeValueAsString(model);
-            ResponseResult<String> result = spglInterface.add(json + HomeController.getUsername());
+            ResponseResult<String> result = spglInterface.add(json + StaticToken.getToken());
             if (result.isSuccess()) {
-                String s = json.substring(result.getData().lastIndexOf("}") + 1, result.getData().length());
-                HomeController.setUsername(s);
+                String s = result.getData().substring(result.getData().lastIndexOf("}") + 1, result.getData().length());
+                StaticToken.setToken(s);
                 return 1;
             } else {
                 mp3Util.mp3("/mp3/error.mp3");
-                HomeController.setUsername(result.getData());
+                StaticToken.setToken(result.getData());
+                alertUtil.f_alert_informationDialog("警告", result.getMessage());
                 return 0;
             }
+        } catch (RetryableException e) {
+            e.printStackTrace();
+            mp3Util.mp3("/mp3/error.mp3");
+            logger.info(new LoggerUtil(IndexController.class, "login", "远程服务器错误").toString());
+            alertUtil.f_alert_informationDialog("警告", "远程服务器错误");
+            return -1;
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             mp3Util.mp3("/mp3/error.mp3");
@@ -383,8 +419,17 @@ public class SpglController {
     }
 
     private int del(ActionEvent event, SpglModel model) {
-        SpglService jsbService = new SpglServiceImpl();
-        return jsbService.delete(model.getUuid());
+        ResponseResult<String> result = spglInterface.del(model.getUuid(), StaticToken.getToken());
+        if (result.isSuccess()) {
+            String s = result.getData().substring(result.getData().lastIndexOf("}") + 1, result.getData().length());
+            StaticToken.setToken(s);
+            return 1;
+        } else {
+            mp3Util.mp3("/mp3/error.mp3");
+            StaticToken.setToken(result.getData());
+            alertUtil.f_alert_informationDialog("警告", result.getMessage());
+            return 0;
+        }
     }
 
     private VBox add_h(List<List<String>> names) {
@@ -609,37 +654,67 @@ public class SpglController {
 
     private int updateData(ActionEvent event, VBox vBox) {
         SpglModel model = new SpglModel();
-        model.setUuid(spid);
-        HBox k1 = (HBox) vBox.getChildren().get(0);
-        TextField textField11 = (TextField) k1.getChildren().get(1);
-        model.setCname(textField11.getText());
-        TextField textField12 = (TextField) k1.getChildren().get(3);
-        model.setJg(Double.parseDouble(textField12.getText()));
-        TextField textField13 = (TextField) k1.getChildren().get(5);
-        model.setDw(textField13.getText());
-        TextField textField14 = (TextField) k1.getChildren().get(7);
-        model.setGe(textField14.getText());
+        try {
+            model.setUuid(spid);
+            HBox k1 = (HBox) vBox.getChildren().get(0);
+            TextField textField11 = (TextField) k1.getChildren().get(1);
+            model.setCname(textField11.getText());
+            TextField textField12 = (TextField) k1.getChildren().get(3);
+            model.setJg(Double.parseDouble(textField12.getText()));
+            TextField textField13 = (TextField) k1.getChildren().get(5);
+            model.setDw(textField13.getText());
+            TextField textField14 = (TextField) k1.getChildren().get(7);
+            model.setGe(textField14.getText());
 
-        HBox k2 = (HBox) vBox.getChildren().get(1);
-        TextField textField21 = (TextField) k2.getChildren().get(1);
-        model.setPp(textField21.getText());
-        TextField textField22 = (TextField) k2.getChildren().get(3);
-        model.setXq(textField22.getText());
-        TextField textField23 = (TextField) k2.getChildren().get(5);
-        model.setSl(Integer.parseInt(textField23.getText()));
+            HBox k2 = (HBox) vBox.getChildren().get(1);
+            TextField textField21 = (TextField) k2.getChildren().get(1);
+            model.setPp(textField21.getText());
+            TextField textField22 = (TextField) k2.getChildren().get(3);
+            model.setXq(textField22.getText());
+            TextField textField23 = (TextField) k2.getChildren().get(5);
+            model.setSl(Integer.parseInt(textField23.getText()));
 
-        HBox k3 = (HBox) vBox.getChildren().get(2);
-        ChoiceBox choiceBox1 = (ChoiceBox) k3.getChildren().get(1);
-        String s1 = (String) choiceBox1.getValue();
-        model.setSxj(s1.equals("否") ? 0 : 1);
-        ChoiceBox choiceBox2 = (ChoiceBox) k3.getChildren().get(3);
-        String s2 = (String) choiceBox2.getValue();
-        model.setLm(s2);
-        Button button = (Button) k3.getChildren().get(4);
-        model.setZt(button.getId());
-
-        SpglService jsbService = new SpglServiceImpl();
-        return jsbService.update(model);
+            HBox k3 = (HBox) vBox.getChildren().get(2);
+            ChoiceBox choiceBox1 = (ChoiceBox) k3.getChildren().get(1);
+            String s1 = (String) choiceBox1.getValue();
+            model.setSxj(s1.equals("否") ? 0 : 1);
+            ChoiceBox choiceBox2 = (ChoiceBox) k3.getChildren().get(3);
+            String s2 = (String) choiceBox2.getValue();
+            model.setLm(s2);
+            Button button = (Button) k3.getChildren().get(4);
+            model.setZt(button.getId());
+        } catch (Exception e) {
+            mp3Util.mp3("/mp3/error.mp3");
+            logger.info(new LoggerUtil(IndexController.class, "login", "数据转换错误").toString());
+            alertUtil.f_alert_informationDialog("警告", "数据转换错误");
+            return 0;
+        }
+        try {
+            String json = objectMapper.writeValueAsString(model);
+            ResponseResult<String> result = spglInterface.update(json + StaticToken.getToken());
+            if (result.isSuccess()) {
+                String s = result.getData().substring(result.getData().lastIndexOf("}") + 1, result.getData().length());
+                StaticToken.setToken(s);
+                return 1;
+            } else {
+                mp3Util.mp3("/mp3/error.mp3");
+                StaticToken.setToken(result.getData());
+                alertUtil.f_alert_informationDialog("警告", result.getMessage());
+                return 0;
+            }
+        } catch (RetryableException e) {
+            e.printStackTrace();
+            mp3Util.mp3("/mp3/error.mp3");
+            logger.info(new LoggerUtil(IndexController.class, "login", "远程服务器错误").toString());
+            alertUtil.f_alert_informationDialog("警告", "远程服务器错误");
+            return -1;
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            mp3Util.mp3("/mp3/error.mp3");
+            logger.info(new LoggerUtil(IndexController.class, "login", "数据转换错误").toString());
+            alertUtil.f_alert_informationDialog("警告", "数据转换错误");
+            return -1;
+        }
     }
 
     private String addImg() throws Exception {

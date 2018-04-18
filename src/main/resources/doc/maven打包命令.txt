@@ -8,6 +8,7 @@ https://blog.csdn.net/jay_1989/article/details/51262059
 String json = objectMapper.writeValueAsString(model);
 //json转java
 //            AccountBean acc = objectMapper.readValue(json, AccountBean.class);
+List<Bean> beanList = mapper.readValue(jsonString, new TypeReference<List<Bean>>() {});
 创建空白json并且赋值
 // 创建一个 node
 //            ObjectNode node = objectMapper.createObjectNode();

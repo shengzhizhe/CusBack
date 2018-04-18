@@ -14,6 +14,7 @@ import org.cus.fx.grzl.controller.GrzlController;
 import org.cus.fx.order.controller.OrderController;
 import org.cus.fx.spgl.controller.SpglController;
 import org.cus.fx.util.AlertUtil;
+import org.cus.fx.util.StaticToken;
 
 /**
  * @author ld
@@ -23,14 +24,13 @@ import org.cus.fx.util.AlertUtil;
  */
 public class HomeController {
 
-    static String username;
     static int i_i = 0;
 
     @FXML
     private Pane bodys;
 
     public void init(String account) throws Exception {
-        setUsername(account);
+        StaticToken.setToken(account);
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/home/home.fxml"));
 //        获取stage
         ObservableList<Stage> stages = FXRobotHelper.getStages();
@@ -115,13 +115,6 @@ public class HomeController {
         EwmController.ewm(bodys);
     }
 
-    public static String getUsername() {
-        return username;
-    }
-
-    public static void setUsername(String username) {
-        HomeController.username = username;
-    }
 
     public static int getI_i() {
         return i_i;

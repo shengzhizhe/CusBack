@@ -12,8 +12,8 @@ import javafx.scene.layout.Pane;
 import org.cus.fx.account.model.AccountModel;
 import org.cus.fx.account.service.AccountService;
 import org.cus.fx.account.service.AccountServiceImpl;
-import org.cus.fx.home.controller.HomeController;
 import org.cus.fx.util.Base64Util;
+import org.cus.fx.util.StaticToken;
 
 /**
  * @author ld
@@ -47,7 +47,7 @@ public class GrzlController {
         AccountModel model = new AccountModel();
         text = Base64Util.encode(text);
         model.setPassword(text);
-        model.setUsername(HomeController.getUsername());
+        model.setUsername(new StaticToken().getToken());
         int i = accountService.update(model);
         if (i > 0) {
             Pane pane = (Pane) textField.getParent().getParent();
