@@ -20,7 +20,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
-import org.cus.fx.IndexController;
 import org.cus.fx.api.SpglInterface;
 import org.cus.fx.spgl.model.SpglModel;
 import org.cus.fx.util.*;
@@ -234,17 +233,17 @@ public class SpglController {
             } catch (IOException e) {
                 e.printStackTrace();
                 mp3Util.mp3("/mp3/error.mp3");
-                logger.info(new LoggerUtil(IndexController.class, "spgl", "数据转换错误").toString());
+                logger.info(new LoggerUtil(SpglController.class, "spgl", "数据转换错误").toString());
                 alertUtil.f_alert_informationDialog("警告", "数据转换错误");
             } catch (Exception e) {
                 e.printStackTrace();
                 mp3Util.mp3("/mp3/error.mp3");
-                logger.info(new LoggerUtil(IndexController.class, "spgl", "获取数据失败").toString());
+                logger.info(new LoggerUtil(SpglController.class, "spgl", "获取数据失败").toString());
                 alertUtil.f_alert_informationDialog("警告", "获取数据失败");
             }
         } else {
             mp3Util.mp3("/mp3/error.mp3");
-            logger.info(new LoggerUtil(IndexController.class, "spgl", result.getMessage()).toString());
+            logger.info(new LoggerUtil(SpglController.class, "spgl", result.getMessage()).toString());
             alertUtil.f_alert_informationDialog("警告", result.getMessage());
         }
     }
@@ -390,7 +389,7 @@ public class SpglController {
             model.setZt(button.getId());
         } catch (Exception e) {
             mp3Util.mp3("/mp3/error.mp3");
-            logger.info(new LoggerUtil(IndexController.class, "login", "数据转换错误").toString());
+            logger.info(new LoggerUtil(SpglController.class, "login", "数据转换错误").toString());
             alertUtil.f_alert_informationDialog("警告", "数据转换错误");
             return 0;
         }
@@ -410,13 +409,13 @@ public class SpglController {
         } catch (RetryableException e) {
             e.printStackTrace();
             mp3Util.mp3("/mp3/error.mp3");
-            logger.info(new LoggerUtil(IndexController.class, "login", "远程服务器错误").toString());
+            logger.info(new LoggerUtil(SpglController.class, "login", "远程服务器错误").toString());
             alertUtil.f_alert_informationDialog("警告", "远程服务器错误");
             return -1;
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             mp3Util.mp3("/mp3/error.mp3");
-            logger.info(new LoggerUtil(IndexController.class, "login", "数据转换错误").toString());
+            logger.info(new LoggerUtil(SpglController.class, "login", "数据转换错误").toString());
             alertUtil.f_alert_informationDialog("警告", "数据转换错误");
             return -1;
         }
@@ -689,7 +688,7 @@ public class SpglController {
             model.setZt(button.getId());
         } catch (Exception e) {
             mp3Util.mp3("/mp3/error.mp3");
-            logger.info(new LoggerUtil(IndexController.class, "login", "数据转换错误").toString());
+            logger.info(new LoggerUtil(SpglController.class, "login", "数据转换错误").toString());
             alertUtil.f_alert_informationDialog("警告", "数据转换错误");
             return 0;
         }
@@ -709,13 +708,13 @@ public class SpglController {
         } catch (RetryableException e) {
             e.printStackTrace();
             mp3Util.mp3("/mp3/error.mp3");
-            logger.info(new LoggerUtil(IndexController.class, "login", "远程服务器错误").toString());
+            logger.info(new LoggerUtil(SpglController.class, "login", "远程服务器错误").toString());
             alertUtil.f_alert_informationDialog("警告", "远程服务器错误");
             return -1;
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             mp3Util.mp3("/mp3/error.mp3");
-            logger.info(new LoggerUtil(IndexController.class, "login", "数据转换错误").toString());
+            logger.info(new LoggerUtil(SpglController.class, "login", "数据转换错误").toString());
             alertUtil.f_alert_informationDialog("警告", "数据转换错误");
             return -1;
         }

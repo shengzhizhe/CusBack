@@ -99,7 +99,7 @@ public class HomeController {
      */
     @FXML
     private void ddgl() {
-        new OrderController().ddgl(bodys, 0, "0", 0);
+        new OrderController().ddgl(bodys, 0, 0, 0);
     }
 
     /**
@@ -107,7 +107,7 @@ public class HomeController {
      */
     @FXML
     private void ddgl2() {
-        new OrderController().ddgl(bodys, 0, null, 1);
+        new OrderController().ddgl(bodys, 0, 1, 1);
     }
 
     @FXML

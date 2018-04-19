@@ -26,7 +26,7 @@
                     </VBox.margin>
                 </Button>
                 <Button mnemonicParsing="false" onAction="#ddgl" prefHeight="23.0" prefWidth="97.0" styleClass="menus"
-                        text="最新订单"/>
+                        text="未完订单"/>
                 <Button mnemonicParsing="false" onAction="#ddgl2" prefHeight="23.0" prefWidth="97.0" styleClass="menus"
                         text="订单管理"/>
                 <Button mnemonicParsing="false" onAction="#grzl" prefHeight="23.0" prefWidth="96.0" styleClass="menus"

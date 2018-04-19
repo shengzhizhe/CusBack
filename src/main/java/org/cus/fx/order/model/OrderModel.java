@@ -29,7 +29,7 @@ public class OrderModel {
     private String account;
     //商家id
     private String busid;
-    //订单状态  0:未完成，1：已完成，2：已关闭
+    //订单状态  -1:最新订单 0:未完成，1：已完成，2：已关闭
     private int type;
 
     public OrderModel() {

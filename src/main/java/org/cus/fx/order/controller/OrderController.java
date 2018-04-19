@@ -1,5 +1,7 @@
 package org.cus.fx.order.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -9,17 +11,17 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
+import org.cus.fx.api.OrderInterface;
 import org.cus.fx.order.model.OrderModel;
-import org.cus.fx.order.service.OrderService;
-import org.cus.fx.order.service.OrderServiceImpl;
-import org.cus.fx.order.service.OrderSpService;
-import org.cus.fx.order.service.OrderSpServiceImpl;
-import org.cus.fx.spgl.model.SpglModel;
-import org.cus.fx.util.AlertUtil;
+import org.cus.fx.order.model.OrderSpModel;
+import org.cus.fx.spgl.controller.SpglController;
+import org.cus.fx.util.*;
 import org.cus.fx.util.mp3.MP3Util;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Timer;
+import java.util.logging.Logger;
 
 import static javafx.scene.layout.Region.USE_COMPUTED_SIZE;
 
@@ -27,16 +29,23 @@ public class OrderController {
 
     static Pane pane_lout;
     static int pageNow;
-    static String zt2;
+    static int zt2;
     static int lxqf2;
 
-    static TableView<SpglModel> tableView_body = null;
-    ObservableList<OrderModel> data = null;
-    ObservableList<SpglModel> data2 = null;
+    private static Logger logger = Logger.getLogger(SpglController.class.toString());
+    private OrderInterface orderInterface = FeignUtil.feign()
+            .target(OrderInterface.class, new FeignRequest().URL());
+    private ObjectMapper objectMapper = new ObjectMapper();
+    private MP3Util mp3Util = new MP3Util();
+    private AlertUtil alertUtil = new AlertUtil();
 
-    public void ddgl(Pane pane, int page, String zt, int lxqf) {
+    static TableView<OrderSpModel> tableView_body = null;
+    ObservableList<OrderModel> data = null;
+    ObservableList<OrderSpModel> data2 = null;
+
+    public void ddgl(Pane pane, int page, int zt, int lxqf) {
         setPane_lout(pane);
-        setPageNow(page);
+        setPageNow(page < 1 ? 1 : page);
         setZt2(zt);
         setLxqf2(lxqf);
         pane.getChildren().clear();
@@ -63,39 +72,25 @@ public class OrderController {
         button3.getStyleClass().add("menus");
         pane.getChildren().add(button3);
 
-        Button button4_1 = new Button("全部订单");
+        Button button4_1 = new Button("已完成订单");
         button4_1.setLayoutX(110);
         button4_1.setOnAction(o -> {
-            new OrderController().ddgl(pane, 0, null, lxqf);
+            new OrderController().ddgl(pane, 0, 1, lxqf);
         });
         button4_1.getStyleClass().add("menus");
         if (lxqf == 1)
             pane.getChildren().add(button4_1);
 
-        Button button4_2 = new Button("已完成订单");
-        button4_2.setLayoutX(177);
+        Button button4_2 = new Button("已关闭订单");
+        button4_2.setLayoutX(190);
         button4_2.setOnAction(o -> {
-            new OrderController().ddgl(pane, 0, "1", lxqf);
+            new OrderController().ddgl(pane, 0, 2, lxqf);
         });
         button4_2.getStyleClass().add("menus");
         if (lxqf == 1)
             pane.getChildren().add(button4_2);
 
-        Button button4_3 = new Button("已删除订单");
-        button4_3.setLayoutX(257);
-        button4_3.setOnAction(o -> {
-            new OrderController().ddgl(pane, 0, "2", lxqf);
-        });
-        button4_3.getStyleClass().add("menus");
-        if (lxqf == 1)
-            pane.getChildren().add(button4_3);
-
-//        由定时器实时刷新
-//        OrderService orderService = new OrderServiceImpl();
-//        List<OrderModel> list = orderService.page(page, zt);
-//        data = FXCollections.observableArrayList(list);
         data = FXCollections.observableArrayList();
-
 //        声明table
         TableView<OrderModel> tableView = new TableView<>();
 //        可以替换默认的表格无内容提示信息
@@ -149,7 +144,7 @@ public class OrderController {
         TableColumn column12 = new TableColumn("操作");
 //        禁用排序
         column12.setSortable(false);
-        if (zt != null && zt.equals("2"))
+        if (zt != 0)
             column12.setVisible(false);
         column12.setCellFactory((col) -> {
             TableCell<OrderModel, String> cell = new TableCell<OrderModel, String>() {
@@ -164,24 +159,40 @@ public class OrderController {
                             Button button = new Button("完成");
                             button.setOnAction(o -> {
                                 boolean b = alertUtil.f_alert_confirmDialog("警告", "是否确定完成?");
-                                if (b)
-                                    new OrderController().update(o, this.getTableView().getItems().get(this.getIndex()));
+                                if (b) {
+                                    update(o, this.getTableView().getItems().get(this.getIndex()));
+                                }
                             });
                             button.getStyleClass().add("menus");
                             this.setGraphic(button);
-                        } else {
-                            Button button = new Button("删除");
+                        }
+                    }
+                }
+            };
+            return cell;
+        });
+
+        TableColumn column13 = new TableColumn("操作");
+//        禁用排序
+        column13.setSortable(false);
+        if (zt != 0)
+            column13.setVisible(false);
+        column13.setCellFactory((col) -> {
+            TableCell<OrderModel, String> cell = new TableCell<OrderModel, String>() {
+                @Override
+                public void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    this.setText(null);
+                    this.setGraphic(null);
+                    if (!empty) {
+                        AlertUtil alertUtil = new AlertUtil();
+                        if (lxqf == 0) {
+                            Button button = new Button("关闭");
                             button.getStyleClass().add("menus");
                             button.setOnAction(o -> {
-                                boolean b = alertUtil.f_alert_confirmDialog("警告", "是否确定删除?");
-                                if (b) {
-                                    int i = new OrderController().del(this.getTableView().getItems().get(this.getIndex()).getUuid());
-                                    if (i > 0) {
-                                        alertUtil.f_alert_informationDialog("通知", "成功");
-                                        ddgl(pane, 0, zt, lxqf);
-                                    } else
-                                        alertUtil.f_alert_informationDialog("警告", "失败");
-                                }
+                                boolean b = alertUtil.f_alert_confirmDialog("警告", "是否确定关闭?关闭订单后将无法对其进行任何操作");
+                                if (b)
+                                    del(this.getTableView().getItems().get(this.getIndex()).getUuid());
                             });
                             this.setGraphic(button);
                         }
@@ -193,10 +204,10 @@ public class OrderController {
 
 //        加载数据
         tableView.setItems(data);
-        tableView.getColumns().addAll(column1, column7, column9, column6, column5, column12);
+        tableView.getColumns().addAll(column1, column7, column9, column6, column5, column12, column13);
         pane.getChildren().add(tableView);
 
-        setTableView_body(new TableView<>());
+        tableView_body = new TableView<>();
 //        可以替换默认的表格无内容提示信息
         Label label = new Label("此订单没有查询到商品");
         tableView_body.setPlaceholder(label);
@@ -204,13 +215,13 @@ public class OrderController {
         tableView_body.setPrefWidth(bounds.getWidth() - 90);
         tableView_body.setPrefHeight(bounds.getHeight() - 325 - 50);
         tableView_body.setLayoutY(325);
-        TableColumn<SpglModel, String> column2_1 = new TableColumn<>("id");
+        TableColumn<OrderSpModel, String> column2_1 = new TableColumn<>("id");
         column2_1.setVisible(false);
         column2_1.setCellValueFactory(new PropertyValueFactory<>("uuid"));
-        TableColumn<SpglModel, String> column2_0 = new TableColumn<>("序号");
+        TableColumn<OrderSpModel, String> column2_0 = new TableColumn<>("序号");
         column2_0.setSortable(false);
         column2_0.setCellFactory((col) -> {
-            TableCell<SpglModel, String> cell = new TableCell<SpglModel, String>() {
+            TableCell<OrderSpModel, String> cell = new TableCell<OrderSpModel, String>() {
                 @Override
                 public void updateItem(String item, boolean empty) {
                     super.updateItem(item, empty);
@@ -224,76 +235,157 @@ public class OrderController {
             };
             return cell;
         });
-        TableColumn<SpglModel, String> column2_2 = new TableColumn<>("名称");
-        column2_2.setCellValueFactory(new PropertyValueFactory<>("cname"));
-        TableColumn<SpglModel, String> column2_3 = new TableColumn<>("单价");
-        column2_3.setCellValueFactory(new PropertyValueFactory<>("jg"));
-        TableColumn<SpglModel, String> column2_4 = new TableColumn<>("单位");
+        TableColumn<OrderSpModel, String> column2_2 = new TableColumn<>("名称");
+        column2_2.setCellValueFactory(new PropertyValueFactory<>("spid"));
+        TableColumn<OrderSpModel, String> column2_3 = new TableColumn<>("单价");
+        column2_3.setCellValueFactory(new PropertyValueFactory<>("spdj"));
+        TableColumn<OrderSpModel, String> column2_4 = new TableColumn<>("单位");
         column2_4.setCellValueFactory(new PropertyValueFactory<>("dw"));
-        TableColumn<SpglModel, String> column2_5 = new TableColumn<>("规格");
+        TableColumn<OrderSpModel, String> column2_5 = new TableColumn<>("规格");
         column2_5.setCellValueFactory(new PropertyValueFactory<>("ge"));
-        TableColumn<SpglModel, String> column2_6 = new TableColumn<>("品牌");
+        TableColumn<OrderSpModel, String> column2_6 = new TableColumn<>("品牌");
         column2_6.setCellValueFactory(new PropertyValueFactory<>("pp"));
-        TableColumn<SpglModel, String> column2_7 = new TableColumn<>("数量");
-        column2_7.setCellValueFactory(new PropertyValueFactory<>("sl"));
-        TableColumn<SpglModel, String> column2_8 = new TableColumn<>("总价");
-        column2_8.setCellValueFactory(new PropertyValueFactory<>("sxj"));
+        TableColumn<OrderSpModel, String> column2_7 = new TableColumn<>("数量");
+        column2_7.setCellValueFactory(new PropertyValueFactory<>("spsl"));
+        TableColumn<OrderSpModel, String> column2_8 = new TableColumn<>("总价");
+        column2_8.setCellValueFactory(new PropertyValueFactory<>("spzj"));
         data2 = FXCollections.observableArrayList();
         tableView_body.setItems(data2);
         tableView_body.getColumns().addAll(column2_1, column2_0, column2_2, column2_3, column2_4, column2_5, column2_6, column2_7);
         pane.getChildren().add(tableView_body);
-
-        if (zt != null && zt.equals("0"))
-            sssx(0);
-        else {
-            OrderService orderService = new OrderServiceImpl();
-            List<OrderModel> list = orderService.page(pageNow, zt2);
-            data.clear();
-            data.addAll(list);
-        }
+//        获取数据
+        pageData(zt2);
+        sssx();
     }
 
     private void update(ActionEvent event, OrderModel model) {
-        OrderService orderService = new OrderServiceImpl();
-        model.setType(1);
-        int i = orderService.update(model);
-        AlertUtil alertUtil = new AlertUtil();
-        if (i > 0) {
-            alertUtil.f_alert_informationDialog("通知", "成功");
-            new OrderController().ddgl(pane_lout, 0, "0", 0);
-        } else
-            alertUtil.f_alert_informationDialog("警告", "失败");
+        try {
+            ResponseResult<String> result = orderInterface.update(model.getUuid(), 1, StaticToken.getToken());
+            if (result.isSuccess()) {
+                String s = result.getData().substring(result.getData().lastIndexOf("}") + 1, result.getData().length());
+                StaticToken.setToken(s);
+                ddgl(getPane_lout(), pageNow, zt2, lxqf2);
+            } else {
+                StaticToken.setToken(result.getData());
+                mp3Util.mp3("/mp3/error.mp3");
+                logger.info(new LoggerUtil(OrderController.class, "orderpage", result.getMessage()).toString());
+                alertUtil.f_alert_informationDialog("警告", result.getMessage());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            mp3Util.mp3("/mp3/error.mp3");
+            logger.info(new LoggerUtil(OrderController.class, "orderpage", "远程服务链接失败").toString());
+            alertUtil.f_alert_informationDialog("警告", "远程服务链接失败");
+        }
     }
 
     private void query(String id) {
-        OrderSpService orderSpService = new OrderSpServiceImpl();
-        List<SpglModel> list = orderSpService.getByOrderId(id);
         data2.clear();
-        data2.addAll(list);
+        try {
+            ResponseResult<String> result = orderInterface.getSp(pageNow, 15, id, StaticToken.getToken());
+//        更新订单列表
+            if (result.isSuccess()) {
+                String s = result.getData().substring(result.getData().lastIndexOf("]") + 1, result.getData().length());
+                StaticToken.setToken(s);
+                try {
+                    String json = result.getData().substring(0, result.getData().lastIndexOf("]") + 1);
+                    List<OrderSpModel> beanList = objectMapper.readValue(json, new TypeReference<List<OrderSpModel>>() {
+                    });
+                    data2.addAll(beanList);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    mp3Util.mp3("/mp3/error.mp3");
+                    logger.info(new LoggerUtil(OrderController.class, "query", "数据转换错误").toString());
+                    alertUtil.f_alert_informationDialog("警告", "数据转换错误");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    mp3Util.mp3("/mp3/error.mp3");
+                    logger.info(new LoggerUtil(OrderController.class, "query", "获取数据失败").toString());
+                    alertUtil.f_alert_informationDialog("警告", "获取数据失败");
+                }
+            } else {
+                StaticToken.setToken(result.getData());
+//                mp3Util.mp3("/mp3/error.mp3");
+                logger.info(new LoggerUtil(OrderController.class, "query", result.getMessage()).toString());
+                alertUtil.f_alert_informationDialog("警告", result.getMessage());
+            }
+        } catch (RuntimeException e) {
+//            mp3Util.mp3("/mp3/error.mp3");
+            logger.info(new LoggerUtil(OrderController.class, "query", "服务器链接失败，请从新登录").toString());
+            alertUtil.f_alert_informationDialog("警告", "服务器链接失败，请从新登录");
+        }
     }
 
     //实时刷新
-    public void sssx(int i) {
+    public void sssx() {
         Timer timer = new Timer(true);
-        timer.schedule(
-                new java.util.TimerTask() {
-                    public void run() {
-                        OrderService orderService = new OrderServiceImpl();
-                        List<OrderModel> list = orderService.page(pageNow, "-1");
-                        if (list.size() > 0) {
-                            orderService.update2();
-                            new MP3Util().mp3("/mp3/xddts.mp3");
+        if (zt2 == 0) {
+            timer.schedule(
+                    new java.util.TimerTask() {
+                        public void run() {
+                            //        最新订单提醒
+                            ResponseResult<String> result = orderInterface.findByType(StaticToken.getToken());
+                            if (result.isSuccess()) {
+                                mp3Util.mp3("/mp3/xddts.mp3");
+                                pageData(0);
+                            }
                         }
-                        List<OrderModel> list2 = orderService.page(pageNow, zt2);
-                        data.clear();
-                        data.addAll(list2);
-                    }
-                }, 0, 30 * 1000);
+                    }, 0, 30 * 1000);
+        } else
+//            切换其它的时候用于终止定期时
+            timer.cancel();
     }
 
-    private int del(String id) {
-        OrderService orderService = new OrderServiceImpl();
-        return orderService.del(id);
+    private void pageData(int z) {
+        data.clear();
+        try {
+            ResponseResult<String> result = orderInterface.page(pageNow, 15, z, StaticToken.getToken());
+//        更新订单列表
+            if (result.isSuccess()) {
+                String s = result.getData().substring(result.getData().lastIndexOf("]") + 1, result.getData().length());
+                StaticToken.setToken(s);
+                try {
+                    String json = result.getData().substring(0, result.getData().lastIndexOf("]") + 1);
+                    List<OrderModel> beanList = objectMapper.readValue(json, new TypeReference<List<OrderModel>>() {
+                    });
+                    data.addAll(beanList);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    mp3Util.mp3("/mp3/error.mp3");
+                    logger.info(new LoggerUtil(OrderController.class, "orderpage", "数据转换错误").toString());
+                    alertUtil.f_alert_informationDialog("警告", "数据转换错误");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    mp3Util.mp3("/mp3/error.mp3");
+                    logger.info(new LoggerUtil(OrderController.class, "orderpage", "获取数据失败").toString());
+                    alertUtil.f_alert_informationDialog("警告", "获取数据失败");
+                }
+            } else {
+                StaticToken.setToken(result.getData());
+//                mp3Util.mp3("/mp3/error.mp3");
+                logger.info(new LoggerUtil(OrderController.class, "orderpage", result.getMessage()).toString());
+                alertUtil.f_alert_informationDialog("警告", result.getMessage());
+            }
+        } catch (RuntimeException e) {
+//            mp3Util.mp3("/mp3/error.mp3");
+            logger.info(new LoggerUtil(OrderController.class, "orderpage", "服务器链接失败，请从新登录").toString());
+            alertUtil.f_alert_informationDialog("警告", "服务器链接失败，请从新登录");
+        }
+    }
+
+    //关闭订单
+    private void del(String id) {
+        ResponseResult<String> result = orderInterface.update(id, 2, StaticToken.getToken());
+        if (result.isSuccess()) {
+            String s = result.getData().substring(result.getData().lastIndexOf("}") + 1, result.getData().length());
+            StaticToken.setToken(s);
+            ddgl(getPane_lout(), pageNow, zt2, lxqf2);
+        } else {
+            StaticToken.setToken(result.getData());
+            mp3Util.mp3("/mp3/error.mp3");
+            logger.info(new LoggerUtil(OrderController.class, "orderpage", result.getMessage()).toString());
+            alertUtil.f_alert_informationDialog("警告", result.getMessage());
+        }
     }
 
     public static Pane getPane_lout() {
@@ -312,11 +404,11 @@ public class OrderController {
         OrderController.pageNow = pageNow;
     }
 
-    public static String getZt2() {
+    public static int getZt2() {
         return zt2;
     }
 
-    public static void setZt2(String zt2) {
+    public static void setZt2(int zt2) {
         OrderController.zt2 = zt2;
     }
 
@@ -328,13 +420,6 @@ public class OrderController {
         OrderController.lxqf2 = lxqf2;
     }
 
-    public static TableView<SpglModel> getTableView_body() {
-        return tableView_body;
-    }
-
-    public static void setTableView_body(TableView<SpglModel> tableView_body) {
-        OrderController.tableView_body = tableView_body;
-    }
 
     public ObservableList<OrderModel> getData() {
         return data;
@@ -344,11 +429,4 @@ public class OrderController {
         this.data = data;
     }
 
-    public ObservableList<SpglModel> getData2() {
-        return data2;
-    }
-
-    public void setData2(ObservableList<SpglModel> data2) {
-        this.data2 = data2;
-    }
 }
