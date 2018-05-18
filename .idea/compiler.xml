@@ -7,14 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="CusBack" />
-        <module name="fxback" />
-        <module name="Remember" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="1.8">
-      <module name="CusBack" target="1.8" />
-      <module name="fxback" target="1.8" />
-      <module name="Remember" target="1.8" />
-    </bytecodeTargetLevel>
   </component>
 </project>
