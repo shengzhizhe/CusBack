@@ -5,7 +5,6 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 
 import java.util.Optional;
-import java.util.Timer;
 
 /**
  * @author ld

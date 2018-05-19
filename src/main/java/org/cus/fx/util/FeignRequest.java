@@ -1,7 +1,5 @@
 package org.cus.fx.util;
 
-import org.cus.fx.util.jdbc.JDBCUtils;
-
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -15,7 +13,7 @@ public class FeignRequest {
 
     public String URL() {
         try {
-            InputStream is = JDBCUtils.class.getClassLoader().getResourceAsStream("db.properties");
+            InputStream is = FeignRequest.class.getClassLoader().getResourceAsStream("db.properties");
             Properties properties = new Properties();
             properties.load(is);
             return properties.getProperty("feign-url");

@@ -1,56 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
+
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import java.lang.*?>
 <?import javafx.scene.layout.*?>
-
-
-<Pane fx:controller="org.cus.fx.IndexController" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <VBox prefHeight="600.0" prefWidth="1000.0">
-         <children>
-            <HBox prefHeight="28.0" prefWidth="1000.0">
-               <children>
-                  <Label prefHeight="28.0" prefWidth="189.0" text="注册页面" />
-               </children>
-            </HBox>
-            <HBox prefHeight="100.0" prefWidth="200.0">
-               <children>
-                  <Label text="账号：">
-                     <HBox.margin>
-                        <Insets left="20.0" />
-                     </HBox.margin>
-                  </Label>
-                  <TextField fx:id="res_acc" prefHeight="23.0" prefWidth="293.0" />
-               </children>
-            </HBox>
-            <HBox prefHeight="100.0" prefWidth="200.0">
-               <children>
-                  <Label text="密码：">
-                     <HBox.margin>
-                        <Insets left="20.0" />
-                     </HBox.margin>
-                  </Label>
-                  <TextField fx:id="res_pwd" prefHeight="23.0" prefWidth="291.0" />
-               </children>
-            </HBox>
-            <HBox prefHeight="100.0" prefWidth="200.0">
-               <children>
-                  <Button fx:id="res_res" onAction="#register_data" mnemonicParsing="false" text="注册">
-                     <HBox.margin>
-                        <Insets left="20.0" />
-                     </HBox.margin>
-                  </Button>
-                  <Button onAction="#register_login" mnemonicParsing="false" text="登录">
-                     <HBox.margin>
-                        <Insets left="20.0" />
-                     </HBox.margin>
-                  </Button>
-                  <Label fx:id="res_error" />
-               </children>
-            </HBox>
-         </children>
-      </VBox>
-   </children>
+<Pane fx:controller="org.cus.fx.IndexController" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+      minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8"
+      xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <VBox prefHeight="600.0" prefWidth="1000.0">
+            <children>
+                <HBox prefHeight="28.0" prefWidth="1000.0">
+                    <children>
+                        <Label prefHeight="28.0" prefWidth="189.0" text="注册页面"/>
+                    </children>
+                </HBox>
+                <HBox prefHeight="100.0" prefWidth="200.0">
+                    <children>
+                        <Label text="账号：">
+                            <HBox.margin>
+                                <Insets left="20.0"/>
+                            </HBox.margin>
+                        </Label>
+                        <TextField fx:id="res_acc" prefHeight="23.0" prefWidth="293.0"/>
+                    </children>
+                </HBox>
+                <HBox prefHeight="100.0" prefWidth="200.0">
+                    <children>
+                        <Label text="密码：">
+                            <HBox.margin>
+                                <Insets left="20.0"/>
+                            </HBox.margin>
+                        </Label>
+                        <TextField fx:id="res_pwd" prefHeight="23.0" prefWidth="291.0"/>
+                    </children>
+                </HBox>
+                <HBox prefHeight="100.0" prefWidth="200.0">
+                    <children>
+                        <Button fx:id="res_res" onAction="#register_data" mnemonicParsing="false" text="注册">
+                            <HBox.margin>
+                                <Insets left="20.0"/>
+                            </HBox.margin>
+                        </Button>
+                        <Button onAction="#register_login" mnemonicParsing="false" text="登录">
+                            <HBox.margin>
+                                <Insets left="20.0"/>
+                            </HBox.margin>
+                        </Button>
+                        <Label fx:id="res_error"/>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </children>
 </Pane>

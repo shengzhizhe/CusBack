@@ -3,7 +3,10 @@ package org.cus.fx.spgl.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.Feign;
+import feign.Request;
 import feign.RetryableException;
+import feign.Retryer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -24,7 +27,6 @@ import org.cus.fx.api.SpglInterface;
 import org.cus.fx.api.UploadInterface;
 import org.cus.fx.spgl.model.SpglModel;
 import org.cus.fx.util.*;
-import org.cus.fx.util.jdbc.Path;
 import org.cus.fx.util.mp3.MP3Util;
 
 import javax.activation.MimetypesFileTypeMap;
@@ -49,7 +51,9 @@ public class SpglController {
     private static Logger logger = Logger.getLogger(SpglController.class.toString());
     private SpglInterface spglInterface = FeignUtil.feign()
             .target(SpglInterface.class, new FeignRequest().URL());
-    private UploadInterface uploadInterface = FeignUtil.feign()
+    private UploadInterface uploadInterface = Feign.builder()
+            .options(new Request.Options(1000, 3500))
+            .retryer(new Retryer.Default(5000, 5000, 3))
             .target(UploadInterface.class, new FeignRequest().URL());
     private ObjectMapper objectMapper = new ObjectMapper();
     private MP3Util mp3Util = new MP3Util();
@@ -500,7 +504,12 @@ public class SpglController {
             try {
                 String s = this.addImg();
                 button_file.setId(s);
-                image.setImage(new Image("file:" + s, true));
+                image.setImage(new Image(new FeignRequest().URL() + "/imgServer/" + s, true));
+                if (s.equals("-1")) {
+                    mp3Util.mp3("/mp3/error.mp3");
+                    AlertUtil alertUtil = new AlertUtil();
+                    alertUtil.f_alert_informationDialog("警告", "失败");
+                }
             } catch (Exception e) {
                 mp3Util.mp3("/mp3/error.mp3");
                 AlertUtil alertUtil = new AlertUtil();
@@ -620,7 +629,12 @@ public class SpglController {
             try {
                 String s = this.addImg();
                 button_file.setId(s);
-                image.setImage(new Image("file:" + s, true));
+                image.setImage(new Image(new FeignRequest().URL() + "/imgServer/" + s, true));
+                if (s.equals("-1")) {
+                    mp3Util.mp3("/mp3/error.mp3");
+                    AlertUtil alertUtil = new AlertUtil();
+                    alertUtil.f_alert_informationDialog("警告", "失败");
+                }
             } catch (Exception e) {
                 mp3Util.mp3("/mp3/error.mp3");
                 AlertUtil alertUtil = new AlertUtil();
@@ -722,7 +736,25 @@ public class SpglController {
         }
     }
 
-    private String addImg() throws Exception {
+    private String addImg() {
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("选择文件");
+            File file = fileChooser.showOpenDialog(new Stage());
+            if (file == null)
+                return "";
+            FileInputStream fileInputStream = new FileInputStream(file);
+            ResponseResult<String> result = uploadInterface.uploadFile(fileInputStream);
+            if (result.isSuccess())
+                return result.getMessage().split("}")[0];
+            else
+                return "-1";
+        } catch (Exception e) {
+            return "-1";
+        }
+    }
+
+    private String addImg2() throws Exception {
         FileInputStream fis = null;
         FileOutputStream fos = null;
         try {
@@ -731,7 +763,7 @@ public class SpglController {
             File file = fileChooser.showOpenDialog(new Stage());
             if (file == null)
                 return "";
-            String urlStr = "http://localhost:9002/api/upload/upload";
+            String urlStr = new FeignRequest().URL() + "/api/upload/upload";
             Map<String, String> fileMap = new HashMap<String, String>();
             String fileName = file.getName();
             fileMap.put("fileName", file.getPath());
@@ -740,7 +772,7 @@ public class SpglController {
             Map<String, String> textMap = new HashMap<String, String>();
             //可以设置多个input的name，value
             textMap.put("token", token);
-            String s = formUpload(urlStr,textMap, fileMap, contentType);
+            String s = formUpload(urlStr, textMap, fileMap, contentType);
             String res = s.split("\",\"code")[0];
             s = res.substring(res.lastIndexOf("}") + 1, res.length());
             StaticToken.setToken(s);
@@ -748,7 +780,7 @@ public class SpglController {
             String suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
             fis = new FileInputStream(file);
             // 打开输出流
-            String path = new Path().path() + "/img/" + GetUuid.getUUID() + "." + suffix;
+            String path = new FeignRequest().URL() + "/img/" + GetUuid.getUUID() + "." + suffix;
             fos = new FileOutputStream(path);
             // 读取和写入信息
             int len = 0;
@@ -757,7 +789,7 @@ public class SpglController {
             while ((len = fis.read(b)) != -1) {
                 fos.write(b);
             }
-            return path;
+            return GetUuid.getUUID() + "." + suffix;
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -779,14 +811,15 @@ public class SpglController {
 
     /**
      * 上传图片
+     *
      * @param urlStr
      * @param fileMap
      * @param contentType 没有传入文件类型默认采用application/octet-stream
-     * contentType非空采用filename匹配默认的图片类型
+     *                    contentType非空采用filename匹配默认的图片类型
      * @return 返回response数据
      */
     @SuppressWarnings("rawtypes")
-    public static String formUpload(String urlStr,Map<String, String> textMap, Map<String, String> fileMap,String contentType) {
+    public static String formUpload(String urlStr, Map<String, String> textMap, Map<String, String> fileMap, String contentType) {
         String res = "";
         HttpURLConnection conn = null;
         // boundary就是request头和上传文件内容的分隔符
@@ -841,14 +874,14 @@ public class SpglController {
                     //没有传入文件类型，同时根据文件获取不到类型，默认采用application/octet-stream
                     contentType = new MimetypesFileTypeMap().getContentType(file);
                     //contentType非空采用filename匹配默认的图片类型
-                    if(!"".equals(contentType)){
+                    if (!"".equals(contentType)) {
                         if (filename.endsWith(".png")) {
                             contentType = "image/png";
-                        }else if (filename.endsWith(".jpg") || filename.endsWith(".jpeg") || filename.endsWith(".jpe")) {
+                        } else if (filename.endsWith(".jpg") || filename.endsWith(".jpeg") || filename.endsWith(".jpe")) {
                             contentType = "image/jpeg";
-                        }else if (filename.endsWith(".gif")) {
+                        } else if (filename.endsWith(".gif")) {
                             contentType = "image/gif";
-                        }else if (filename.endsWith(".ico")) {
+                        } else if (filename.endsWith(".ico")) {
                             contentType = "image/image/x-icon";
                         }
                     }

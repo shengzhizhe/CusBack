@@ -3,7 +3,6 @@ package org.cus.fx.ewm.controller;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
-import org.cus.fx.util.jdbc.Path;
 
 import java.io.InputStream;
 import java.util.Properties;
