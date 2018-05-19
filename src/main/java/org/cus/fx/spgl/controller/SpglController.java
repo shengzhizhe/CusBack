@@ -3,10 +3,7 @@ package org.cus.fx.spgl.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import feign.Feign;
-import feign.Request;
 import feign.RetryableException;
-import feign.Retryer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -51,9 +48,7 @@ public class SpglController {
     private static Logger logger = Logger.getLogger(SpglController.class.toString());
     private SpglInterface spglInterface = FeignUtil.feign()
             .target(SpglInterface.class, new FeignRequest().URL());
-    private UploadInterface uploadInterface = Feign.builder()
-            .options(new Request.Options(1000, 3500))
-            .retryer(new Retryer.Default(5000, 5000, 3))
+    private UploadInterface uploadInterface = FeignUtil.feign()
             .target(UploadInterface.class, new FeignRequest().URL());
     private ObjectMapper objectMapper = new ObjectMapper();
     private MP3Util mp3Util = new MP3Util();
@@ -495,7 +490,6 @@ public class SpglController {
         ImageView image = new ImageView();
         image.setFitHeight(80);
         image.setFitWidth(80);
-        image.setImage(new Image("/image/tupian.jpg", true));
         Button button_file = new Button();
         button_file.setPrefWidth(80);
         button_file.setPrefHeight(20);
@@ -504,7 +498,7 @@ public class SpglController {
             try {
                 String s = this.addImg();
                 button_file.setId(s);
-                image.setImage(new Image(new FeignRequest().URL() + "/imgServer/" + s, true));
+                image.setImage(new Image(new FeignRequest().URL() + "/" + s, true));
                 if (s.equals("-1")) {
                     mp3Util.mp3("/mp3/error.mp3");
                     AlertUtil alertUtil = new AlertUtil();
@@ -617,8 +611,7 @@ public class SpglController {
         choiceBox2.setId("商品分类");
         hBox.getChildren().addAll(label2, choiceBox2);
 
-        String path = (model.getZt() != null && !model.getZt().trim().equals("")) ? "file:" + model.getZt() : "/image/tupian.jpg";
-        ImageView image = new ImageView(path);
+        ImageView image = new ImageView(new FeignRequest().URL() + "/" + model.getZt());
         image.setFitHeight(80);
         image.setFitWidth(80);
         Button button_file = new Button();
@@ -629,7 +622,7 @@ public class SpglController {
             try {
                 String s = this.addImg();
                 button_file.setId(s);
-                image.setImage(new Image(new FeignRequest().URL() + "/imgServer/" + s, true));
+                image.setImage(new Image(new FeignRequest().URL() + "/" + s, true));
                 if (s.equals("-1")) {
                     mp3Util.mp3("/mp3/error.mp3");
                     AlertUtil alertUtil = new AlertUtil();
@@ -736,25 +729,7 @@ public class SpglController {
         }
     }
 
-    private String addImg() {
-        try {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("选择文件");
-            File file = fileChooser.showOpenDialog(new Stage());
-            if (file == null)
-                return "";
-            FileInputStream fileInputStream = new FileInputStream(file);
-            ResponseResult<String> result = uploadInterface.uploadFile(fileInputStream);
-            if (result.isSuccess())
-                return result.getMessage().split("}")[0];
-            else
-                return "-1";
-        } catch (Exception e) {
-            return "-1";
-        }
-    }
-
-    private String addImg2() throws Exception {
+    private String addImg() throws Exception {
         FileInputStream fis = null;
         FileOutputStream fos = null;
         try {
@@ -764,48 +739,53 @@ public class SpglController {
             if (file == null)
                 return "";
             String urlStr = new FeignRequest().URL() + "/api/upload/upload";
-            Map<String, String> fileMap = new HashMap<String, String>();
+            Map<String, String> fileMap = new HashMap<>();
             String fileName = file.getName();
-            fileMap.put("fileName", file.getPath());
+            fileMap.put("file", file.getPath());
             String contentType = "";//image/png
             String token = StaticToken.getToken();
-            Map<String, String> textMap = new HashMap<String, String>();
+            Map<String, String> textMap = new HashMap<>();
             //可以设置多个input的name，value
             textMap.put("token", token);
             String s = formUpload(urlStr, textMap, fileMap, contentType);
-            String res = s.split("\",\"code")[0];
-            s = res.substring(res.lastIndexOf("}") + 1, res.length());
-            StaticToken.setToken(s);
-            // 打开输入流
-            String suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
-            fis = new FileInputStream(file);
-            // 打开输出流
-            String path = new FeignRequest().URL() + "/img/" + GetUuid.getUUID() + "." + suffix;
-            fos = new FileOutputStream(path);
-            // 读取和写入信息
-            int len = 0;
-            // 创建一个字节数组，当做缓冲区
-            byte[] b = new byte[1024];
-            while ((len = fis.read(b)) != -1) {
-                fos.write(b);
-            }
-            return GetUuid.getUUID() + "." + suffix;
-        } catch (IOException e) {
+            String s1 = s.split(",")[2];
+            String s2 = s1.split(":")[1];
+            String s3 = s2.substring(1, s2.length() - 1);
+            return s3;
+//            String res = s.split("\",\"code")[0];
+//            s = res.substring(res.lastIndexOf("}") + 1, res.length());
+//            StaticToken.setToken(s);
+//            // 打开输入流
+//            String suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
+//            fis = new FileInputStream(file);
+//            // 打开输出流
+//            String path = new FeignRequest().URL() + "/img/" + GetUuid.getUUID() + "." + suffix;
+//            fos = new FileOutputStream(path);
+//            // 读取和写入信息
+//            int len = 0;
+//            // 创建一个字节数组，当做缓冲区
+//            byte[] b = new byte[1024];
+//            while ((len = fis.read(b)) != -1) {
+//                fos.write(b);
+//            }
+//            return GetUuid.getUUID();
+        } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (fos != null)
-                    fos.close();
-            } catch (Exception e1) {
-                e1.printStackTrace();
-            }
-            try {
-                if (fis != null)
-                    fis.close();
-            } catch (Exception e2) {
-                e2.printStackTrace();
-            }
         }
+//        finally {
+//            try {
+//                if (fos != null)
+//                    fos.close();
+//            } catch (Exception e1) {
+//                e1.printStackTrace();
+//            }
+//            try {
+//                if (fis != null)
+//                    fis.close();
+//            } catch (Exception e2) {
+//                e2.printStackTrace();
+//            }
+//        }
         return "异常";
     }
 
@@ -919,9 +899,6 @@ public class SpglController {
                 strBuf.append(line).append("\n");
             }
             res = strBuf.toString();
-            res = res.split("\",\"code")[0];
-            String s = res.substring(res.lastIndexOf("}") + 1, res.length());
-            StaticToken.setToken(s);
             reader.close();
             reader = null;
         } catch (Exception e) {
