@@ -750,7 +750,7 @@ public class SpglController {
             Map<String, String> textMap = new HashMap<>();
             //可以设置多个input的name，value
             textMap.put("token", token);
-            String s = formUpload(urlStr, textMap,fileMap, contentType);
+            String s = formUpload(urlStr, textMap, fileMap, contentType);
             ObjectMapper mapper = new ObjectMapper();
             ResponseResult result = mapper.readValue(s, ResponseResult.class);
             if (result.isSuccess())
@@ -777,7 +777,7 @@ public class SpglController {
      * @return 返回response数据
      */
     @SuppressWarnings("rawtypes")
-    public static String formUpload(String urlStr,Map<String, String> textMap, Map<String, String> fileMap, String contentType) {
+    public static String formUpload(String urlStr, Map<String, String> textMap, Map<String, String> fileMap, String contentType) {
         String res = "";
         HttpURLConnection conn = null;
         // boundary就是request头和上传文件内容的分隔符
