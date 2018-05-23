@@ -498,7 +498,7 @@ public class SpglController {
             try {
                 String s = this.addImg();
                 button_file.setId(s);
-                image.setImage(new Image(new FeignRequest().URL() + "/" + s, true));
+                image.setImage(new Image(new FeignRequest().URL() + "/commodity/IoReadImage/" + s, true));
                 if (s.equals("-1")) {
                     mp3Util.mp3("/mp3/error.mp3");
                     AlertUtil alertUtil = new AlertUtil();
@@ -611,7 +611,7 @@ public class SpglController {
         choiceBox2.setId("商品分类");
         hBox.getChildren().addAll(label2, choiceBox2);
 
-        ImageView image = new ImageView(new FeignRequest().URL() + "/" + model.getZt());
+        ImageView image = new ImageView(new FeignRequest().URL() + "/commodity/IoReadImage/" + model.getZt());
         image.setFitHeight(80);
         image.setFitWidth(80);
         Button button_file = new Button();
@@ -622,7 +622,7 @@ public class SpglController {
             try {
                 String s = this.addImg();
                 button_file.setId(s);
-                image.setImage(new Image(new FeignRequest().URL() + "/" + s, true));
+                image.setImage(new Image(new FeignRequest().URL() + "/commodity/IoReadImage/" + s, true));
                 if (s.equals("-1")) {
                     mp3Util.mp3("/mp3/error.mp3");
                     AlertUtil alertUtil = new AlertUtil();
@@ -736,7 +736,6 @@ public class SpglController {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("选择文件");
             fileChooser.getExtensionFilters().addAll(
-//                    new FileChooser.ExtensionFilter("All Images", "*.*"),
                     new FileChooser.ExtensionFilter("JPG", "*.jpg"),
                     new FileChooser.ExtensionFilter("PNG", "*.png")
             );
@@ -745,53 +744,27 @@ public class SpglController {
                 return "";
             String urlStr = new FeignRequest().URL() + "/api/upload/upload";
             Map<String, String> fileMap = new HashMap<>();
-            String fileName = file.getName();
             fileMap.put("file", file.getPath());
             String contentType = "";//image/png
             String token = StaticToken.getToken();
             Map<String, String> textMap = new HashMap<>();
             //可以设置多个input的name，value
             textMap.put("token", token);
-            String s = formUpload(urlStr, textMap, fileMap, contentType);
-            String s1 = s.split(",")[2];
-            String s2 = s1.split(":")[1];
-            String s3 = s2.substring(1, s2.length() - 1);
-            return s3;
-//            String res = s.split("\",\"code")[0];
-//            s = res.substring(res.lastIndexOf("}") + 1, res.length());
-//            StaticToken.setToken(s);
-//            // 打开输入流
-//            String suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
-//            fis = new FileInputStream(file);
-//            // 打开输出流
-//            String path = new FeignRequest().URL() + "/img/" + GetUuid.getUUID() + "." + suffix;
-//            fos = new FileOutputStream(path);
-//            // 读取和写入信息
-//            int len = 0;
-//            // 创建一个字节数组，当做缓冲区
-//            byte[] b = new byte[1024];
-//            while ((len = fis.read(b)) != -1) {
-//                fos.write(b);
-//            }
-//            return GetUuid.getUUID();
+            String s = formUpload(urlStr, textMap,fileMap, contentType);
+            ObjectMapper mapper = new ObjectMapper();
+            ResponseResult result = mapper.readValue(s, ResponseResult.class);
+            if (result.isSuccess())
+                return result.getData().toString();
+            else
+                return "-1";
+//            String s1 = s.split(",")[2];
+//            String s2 = s1.split(":")[1];
+//            String s3 = s2.substring(1, s2.length() - 1);
+//            return s3;
         } catch (Exception e) {
             e.printStackTrace();
+            return "-1";
         }
-//        finally {
-//            try {
-//                if (fos != null)
-//                    fos.close();
-//            } catch (Exception e1) {
-//                e1.printStackTrace();
-//            }
-//            try {
-//                if (fis != null)
-//                    fis.close();
-//            } catch (Exception e2) {
-//                e2.printStackTrace();
-//            }
-//        }
-        return "异常";
     }
 
     /**
@@ -804,7 +777,7 @@ public class SpglController {
      * @return 返回response数据
      */
     @SuppressWarnings("rawtypes")
-    public static String formUpload(String urlStr, Map<String, String> textMap, Map<String, String> fileMap, String contentType) {
+    public static String formUpload(String urlStr,Map<String, String> textMap, Map<String, String> fileMap, String contentType) {
         String res = "";
         HttpURLConnection conn = null;
         // boundary就是request头和上传文件内容的分隔符

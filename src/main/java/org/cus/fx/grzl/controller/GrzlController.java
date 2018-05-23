@@ -11,6 +11,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import org.cus.fx.account.model.AccountModel;
 import org.cus.fx.api.AccountInterface;
 import org.cus.fx.api.PersionInterface;
 import org.cus.fx.order.controller.OrderController;
@@ -48,7 +49,7 @@ public class GrzlController {
             new GrzlController().updatePWD(o, textField);
         });
         children.add(button);
-        Label label2 = new Label("      ");
+        Label label2 = new Label("");
         children.add(label2);
         Label label21 = new Label("修改地址:");
         children.add(label21);
@@ -59,7 +60,7 @@ public class GrzlController {
             new GrzlController().updateAdderss(o, textField2);
         });
         children.add(button2);
-        Label label3 = new Label("      ");
+        Label label3 = new Label("");
         children.add(label3);
         Label label31 = new Label("修改电话:");
         children.add(label31);
@@ -70,6 +71,27 @@ public class GrzlController {
             new GrzlController().updatePhone(o, textField2);
         });
         children.add(button3);
+
+//        商家编码
+        Label label1 = new Label("商家编码:");
+        children.add(label1);
+        try {
+            ResponseResult<AccountModel> result = FeignUtil.feign()
+                    .target(AccountInterface.class, new FeignRequest().URL())
+                    .sjCode(StaticToken.getToken());
+            if (result.isSuccess()) {
+//                textField2.setText(result.getData().ge);
+                Label label123 = new Label(result.getData().getCoding());
+                children.add(label123);
+            } else {
+                Label label123 = new Label("获取商家码失败，可以尝试从新打开该页面或尝试从新登陆");
+                children.add(label123);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Label label123 = new Label("获取商家码失败，可以尝试从新打开该页面或尝试从新登陆");
+            children.add(label123);
+        }
         pane.getChildren().add(hBox);
     }
 
