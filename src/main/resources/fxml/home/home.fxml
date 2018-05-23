@@ -26,17 +26,29 @@
                     </VBox.margin>
                 </Button>
                 <Button mnemonicParsing="false" onAction="#ddgl" prefHeight="23.0" prefWidth="97.0" styleClass="menus"
-                        text="未完订单"/>
+                        text="未完订单">
+                    <VBox.margin>
+                        <Insets top="5.0"/>
+                    </VBox.margin>
+                </Button>
                 <Button mnemonicParsing="false" onAction="#ddgl2" prefHeight="23.0" prefWidth="97.0" styleClass="menus"
-                        text="订单管理"/>
+                        text="订单管理">
+                    <VBox.margin>
+                        <Insets top="5.0"/>
+                    </VBox.margin>
+                </Button>
                 <Button mnemonicParsing="false" onAction="#grzl" prefHeight="23.0" prefWidth="96.0" styleClass="menus"
                         text="个人资料">
                     <VBox.margin>
-                        <Insets top="1.0"/>
+                        <Insets top="5.0"/>
                     </VBox.margin>
                 </Button>
                 <Button mnemonicParsing="false" onAction="#ewm" prefHeight="23.0" prefWidth="97.0" styleClass="menus"
-                        text="二维码"/>
+                        text="二维码">
+                    <VBox.margin>
+                        <Insets top="5.0"/>
+                    </VBox.margin>
+                </Button>
             </children>
         </VBox>
         <Pane fx:id="bodys" layoutX="90.0" prefHeight="-Infinity" prefWidth="-Infinity"/>

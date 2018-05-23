@@ -9,9 +9,10 @@
     -fx-border-radius: 0;
 }
 .menus{
-    -fx-background-image: url("../../image/button.jpg") no-repeat left center;
-    -fx-background-size:cover;
+    /*-fx-background-image: url("../../image/button.jpg") no-repeat left center;
+    -fx-background-size:cover;*/
     /*设置圆角*/
     -fx-background-radius: 0;
     -fx-border-radius: 0;
+    -fx-background-color:#00FFFF;
 }
