@@ -56,6 +56,9 @@ public class SpglController {
 
     static Pane pane_lout;
     static String spid;
+    //    商品分类下拉菜单
+    private ObservableList<String> obs = FXCollections.observableArrayList();
+
     private static ObservableList<SpglModel> data = null;
     private static TableView<SpglModel> tableView = null;
 
@@ -216,10 +219,11 @@ public class SpglController {
         tableView.setItems(data);
         tableView.getColumns().addAll(column1, column2, column3, column4, column5, column6, column7, column8, column9, column10, column11, column12);
         pane.getChildren().add(tableView);
-
+//加载表格主体数据
         datas(page);
     }
 
+    //获取表格总体数据
     private void datas(int page) {
         data.clear();
         ResponseResult<String> result = spglInterface.page(page, 15, StaticToken.getToken());
@@ -338,6 +342,18 @@ public class SpglController {
         pane.getChildren().add(vBox);
     }
 
+    //    获取商品分类数据
+    private void spfl_data() {
+        obs.clear();
+        try {
+            ResponseResult<String> result = spglInterface.spfl();
+            if (result.isSuccess())
+                obs.addAll(result.getData());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void add(ActionEvent event, Pane pane) {
         pane.getChildren().clear();
         List<List<String>> lists = new ArrayList<>();
@@ -353,6 +369,8 @@ public class SpglController {
         list2.add("商品详情");
         list2.add("商品数量");
         lists.add(list2);
+
+        spfl_data();
 
         VBox vBox = add_h(lists);
         pane.getChildren().add(vBox);
@@ -480,8 +498,7 @@ public class SpglController {
         label2.setPrefWidth(60);
         label2.setPrefHeight(20);
         label2.setText("商品分类:");
-        ChoiceBox<String> choiceBox2 = new ChoiceBox<>(FXCollections.observableArrayList(
-                "生疏", "调料", "水产", "烟酒", "其它"));
+        ChoiceBox<String> choiceBox2 = new ChoiceBox<>(obs);
         choiceBox2.setValue("其它");
         choiceBox2.setPrefHeight(20);
         choiceBox2.setId("商品分类");
@@ -555,6 +572,9 @@ public class SpglController {
         list2.add("商品详情]" + model.getXq());
         list2.add("商品数量]" + model.getSl());
         lists.add(list2);
+
+        spfl_data();
+
         VBox vBox = update_h(lists, model);
         pane.getChildren().add(vBox);
     }
@@ -604,8 +624,7 @@ public class SpglController {
         label2.setPrefWidth(60);
         label2.setPrefHeight(20);
         label2.setText("商品分类:");
-        ChoiceBox<String> choiceBox2 = new ChoiceBox<>(FXCollections.observableArrayList(
-                "生疏", "调料", "水产", "烟酒", "其它"));
+        ChoiceBox<String> choiceBox2 = new ChoiceBox<>(obs);
         choiceBox2.setValue(model.getLm());
         choiceBox2.setPrefHeight(20);
         choiceBox2.setId("商品分类");

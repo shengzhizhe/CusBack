@@ -24,4 +24,7 @@ public interface SpglInterface {
     @RequestLine("GET /api/commodity/commodity/page/{pageNow}/{pageSize}?token={token}")
     ResponseResult<String> page(@Param("pageNow") int pageNow, @Param("pageSize") int pageSize, @Param("token") String token);
 
+    @RequestLine("GET /api/category/findAll")
+    ResponseResult<String> spfl();
+
 }
