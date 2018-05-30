@@ -9,12 +9,15 @@ import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import org.cus.fx.api.OrderInterface;
 import org.cus.fx.ewm.controller.EwmController;
 import org.cus.fx.grzl.controller.GrzlController;
 import org.cus.fx.order.controller.OrderController;
 import org.cus.fx.spgl.controller.SpglController;
-import org.cus.fx.util.AlertUtil;
-import org.cus.fx.util.StaticToken;
+import org.cus.fx.util.*;
+import org.cus.fx.util.mp3.MP3Util;
+
+import java.util.Timer;
 
 /**
  * @author ld
@@ -25,6 +28,12 @@ import org.cus.fx.util.StaticToken;
 public class HomeController {
 
     static int i_i = 0;
+
+    private boolean boo_order = true;
+    private MP3Util mp3Util = new MP3Util();
+    private AlertUtil alertUtil = new AlertUtil();
+    private OrderInterface orderInterface = FeignUtil.feign()
+            .target(OrderInterface.class, new FeignRequest().URL());
 
     @FXML
     private Pane bodys;
@@ -64,6 +73,7 @@ public class HomeController {
 //        stage.setAlwaysOnTop(true);
 //        显示
         primaryStage.show();
+        sssx();
     }
 
     //    退出
@@ -130,5 +140,26 @@ public class HomeController {
 
     public void setBodys(Pane bodys) {
         this.bodys = bodys;
+    }
+
+    //实时刷新
+    public void sssx() {
+        Timer timer = new Timer();
+        if (boo_order) {
+            boo_order = false;
+            timer.schedule(
+                    new java.util.TimerTask() {
+                        public void run() {
+                            //        最新订单提醒
+                            ResponseResult<String> result = orderInterface.findByType(StaticToken.getToken());
+                            if (result.isSuccess()) {
+                                mp3Util.mp3("/mp3/xddts.mp3");
+                                new OrderController().pageData(0);
+                            }
+                        }
+                    }, 0, 30 * 1000);
+        } else
+//            切换其它的时候用于终止定期时
+            timer.cancel();
     }
 }

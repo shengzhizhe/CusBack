@@ -20,7 +20,6 @@ import org.cus.fx.util.mp3.MP3Util;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Timer;
 import java.util.logging.Logger;
 
 import static javafx.scene.layout.Region.USE_COMPUTED_SIZE;
@@ -32,6 +31,7 @@ public class OrderController {
     static int zt2;
     static int lxqf2;
 
+    private boolean boo_order = true;
     private static Logger logger = Logger.getLogger(SpglController.class.toString());
     private OrderInterface orderInterface = FeignUtil.feign()
             .target(OrderInterface.class, new FeignRequest().URL());
@@ -255,7 +255,7 @@ public class OrderController {
         pane.getChildren().add(tableView_body);
 //        获取数据
         pageData(zt2);
-        sssx();
+//        sssx();
     }
 
     private void update(ActionEvent event, OrderModel model) {
@@ -316,27 +316,30 @@ public class OrderController {
         }
     }
 
-    //实时刷新
-    public void sssx() {
-        Timer timer = new Timer(true);
-        if (zt2 == 0) {
-            timer.schedule(
-                    new java.util.TimerTask() {
-                        public void run() {
-                            //        最新订单提醒
-                            ResponseResult<String> result = orderInterface.findByType(StaticToken.getToken());
-                            if (result.isSuccess()) {
-                                mp3Util.mp3("/mp3/xddts.mp3");
-                                pageData(0);
-                            }
-                        }
-                    }, 0, 30 * 1000);
-        } else
-//            切换其它的时候用于终止定期时
-            timer.cancel();
-    }
+//    //实时刷新
+//    public void sssx() {
+//        Timer timer = new Timer();
+//        if (zt2 == 0) {
+//            if (boo_order) {
+//                boo_order = false;
+//                timer.schedule(
+//                        new java.util.TimerTask() {
+//                            public void run() {
+//                                //        最新订单提醒
+//                                ResponseResult<String> result = orderInterface.findByType(StaticToken.getToken());
+//                                if (result.isSuccess()) {
+//                                    mp3Util.mp3("/mp3/xddts.mp3");
+//                                    pageData(0);
+//                                }
+//                            }
+//                        }, 0, 30 * 1000);
+//            }
+//        } else
+////            切换其它的时候用于终止定期时
+//            timer.cancel();
+//    }
 
-    private void pageData(int z) {
+    public void pageData(int z) {
         data.clear();
         try {
             ResponseResult<String> result = orderInterface.page(pageNow, 15, z, StaticToken.getToken());
@@ -368,8 +371,10 @@ public class OrderController {
             }
         } catch (RuntimeException e) {
 //            mp3Util.mp3("/mp3/error.mp3");
-            logger.info(new LoggerUtil(OrderController.class, "orderpage", "服务器链接失败，请从新登录").toString());
-            alertUtil.f_alert_informationDialog("警告", "服务器链接失败，请从新登录");
+            logger.info(new LoggerUtil(OrderController.class, "orderpage", "订单刷新失败，请从新登录").toString());
+            alertUtil.f_alert_informationDialog("警告", "订单刷新失败，请从新登录");
+        } catch (Exception e) {
+            logger.info(new LoggerUtil(OrderController.class, "orderpage", "订单刷新失败，其它错误").toString());
         }
     }
 

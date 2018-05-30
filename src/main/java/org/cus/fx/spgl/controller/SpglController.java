@@ -348,7 +348,7 @@ public class SpglController {
         try {
             ResponseResult<String> result = spglInterface.spfl();
             if (result.isSuccess())
-                obs.addAll(result.getData());
+                obs.addAll(result.getData().split(","));
         } catch (Exception e) {
             e.printStackTrace();
         }
