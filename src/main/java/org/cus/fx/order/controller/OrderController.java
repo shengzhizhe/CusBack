@@ -367,7 +367,7 @@ public class OrderController {
                 StaticToken.setToken(result.getData());
 //                mp3Util.mp3("/mp3/error.mp3");
                 logger.info(new LoggerUtil(OrderController.class, "orderpage", result.getMessage()).toString());
-                alertUtil.f_alert_informationDialog("警告", result.getMessage());
+//                alertUtil.f_alert_informationDialog("警告", result.getMessage());
             }
         } catch (RuntimeException e) {
 //            mp3Util.mp3("/mp3/error.mp3");
