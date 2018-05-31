@@ -14,7 +14,6 @@ import javafx.stage.Screen;
 import org.cus.fx.api.OrderInterface;
 import org.cus.fx.order.model.OrderModel;
 import org.cus.fx.order.model.OrderSpModel;
-import org.cus.fx.spgl.controller.SpglController;
 import org.cus.fx.util.*;
 import org.cus.fx.util.mp3.MP3Util;
 
@@ -32,14 +31,14 @@ public class OrderController {
     static int lxqf2;
 
     private boolean boo_order = true;
-    private static Logger logger = Logger.getLogger(SpglController.class.toString());
+    private static Logger logger = Logger.getLogger(OrderController.class.toString());
     private OrderInterface orderInterface = FeignUtil.feign()
             .target(OrderInterface.class, new FeignRequest().URL());
     private ObjectMapper objectMapper = new ObjectMapper();
     private MP3Util mp3Util = new MP3Util();
     private AlertUtil alertUtil = new AlertUtil();
 
-    static TableView<OrderSpModel> tableView_body = null;
+    TableView<OrderSpModel> tableView_body = null;
     ObservableList<OrderModel> data = null;
     ObservableList<OrderSpModel> data2 = null;
 
@@ -340,34 +339,36 @@ public class OrderController {
 //    }
 
     public void pageData(int z) {
-        data.clear();
         try {
-            ResponseResult<String> result = orderInterface.page(pageNow, 15, z, StaticToken.getToken());
+            if (data != null) {
+                data.clear();
+                ResponseResult<String> result = orderInterface.page(pageNow, 15, z, StaticToken.getToken());
 //        更新订单列表
-            if (result.isSuccess()) {
-                String s = result.getData().substring(result.getData().lastIndexOf("]") + 1, result.getData().length());
-                StaticToken.setToken(s);
-                try {
-                    String json = result.getData().substring(0, result.getData().lastIndexOf("]") + 1);
-                    List<OrderModel> beanList = objectMapper.readValue(json, new TypeReference<List<OrderModel>>() {
-                    });
-                    data.addAll(beanList);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    mp3Util.mp3("/mp3/error.mp3");
-                    logger.info(new LoggerUtil(OrderController.class, "orderpage", "数据转换错误").toString());
-                    alertUtil.f_alert_informationDialog("警告", "数据转换错误");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    mp3Util.mp3("/mp3/error.mp3");
-                    logger.info(new LoggerUtil(OrderController.class, "orderpage", "获取数据失败").toString());
-                    alertUtil.f_alert_informationDialog("警告", "获取数据失败");
-                }
-            } else {
-                StaticToken.setToken(result.getData());
+                if (result.isSuccess()) {
+                    String s = result.getData().substring(result.getData().lastIndexOf("]") + 1, result.getData().length());
+                    StaticToken.setToken(s);
+                    try {
+                        String json = result.getData().substring(0, result.getData().lastIndexOf("]") + 1);
+                        List<OrderModel> beanList = objectMapper.readValue(json, new TypeReference<List<OrderModel>>() {
+                        });
+                        data.addAll(beanList);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        mp3Util.mp3("/mp3/error.mp3");
+                        logger.info(new LoggerUtil(OrderController.class, "orderpage", "数据转换错误").toString());
+                        alertUtil.f_alert_informationDialog("警告", "数据转换错误");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        mp3Util.mp3("/mp3/error.mp3");
+                        logger.info(new LoggerUtil(OrderController.class, "orderpage", "获取数据失败").toString());
+                        alertUtil.f_alert_informationDialog("警告", "获取数据失败");
+                    }
+                } else {
+                    StaticToken.setToken(result.getData());
 //                mp3Util.mp3("/mp3/error.mp3");
-                logger.info(new LoggerUtil(OrderController.class, "orderpage", result.getMessage()).toString());
+                    logger.info(new LoggerUtil(OrderController.class, "orderpage", result.getMessage()).toString());
 //                alertUtil.f_alert_informationDialog("警告", result.getMessage());
+                }
             }
         } catch (RuntimeException e) {
 //            mp3Util.mp3("/mp3/error.mp3");
