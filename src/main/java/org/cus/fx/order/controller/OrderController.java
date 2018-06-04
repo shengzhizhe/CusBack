@@ -19,6 +19,7 @@ import org.cus.fx.util.mp3.MP3Util;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Timer;
 import java.util.logging.Logger;
 
 import static javafx.scene.layout.Region.USE_COMPUTED_SIZE;
@@ -39,7 +40,7 @@ public class OrderController {
     private AlertUtil alertUtil = new AlertUtil();
 
     TableView<OrderSpModel> tableView_body = null;
-    ObservableList<OrderModel> data = null;
+    ObservableList<OrderModel> data = FXCollections.observableArrayList();
     ObservableList<OrderSpModel> data2 = null;
 
     public void ddgl(Pane pane, int page, int zt, int lxqf) {
@@ -89,7 +90,7 @@ public class OrderController {
         if (lxqf == 1)
             pane.getChildren().add(button4_2);
 
-        data = FXCollections.observableArrayList();
+//        setData(FXCollections.observableArrayList());
 //        声明table
         TableView<OrderModel> tableView = new TableView<>();
 //        可以替换默认的表格无内容提示信息
@@ -202,7 +203,7 @@ public class OrderController {
         });
 
 //        加载数据
-        tableView.setItems(data);
+        tableView.setItems(getData());
         tableView.getColumns().addAll(column1, column7, column9, column6, column5, column12, column13);
         pane.getChildren().add(tableView);
 
@@ -254,7 +255,7 @@ public class OrderController {
         pane.getChildren().add(tableView_body);
 //        获取数据
         pageData(zt2);
-//        sssx();
+        sssx();
     }
 
     private void update(ActionEvent event, OrderModel model) {
@@ -315,60 +316,59 @@ public class OrderController {
         }
     }
 
-//    //实时刷新
-//    public void sssx() {
-//        Timer timer = new Timer();
-//        if (zt2 == 0) {
-//            if (boo_order) {
-//                boo_order = false;
-//                timer.schedule(
-//                        new java.util.TimerTask() {
-//                            public void run() {
-//                                //        最新订单提醒
-//                                ResponseResult<String> result = orderInterface.findByType(StaticToken.getToken());
-//                                if (result.isSuccess()) {
-//                                    mp3Util.mp3("/mp3/xddts.mp3");
-//                                    pageData(0);
-//                                }
-//                            }
-//                        }, 0, 30 * 1000);
-//            }
-//        } else
-////            切换其它的时候用于终止定期时
-//            timer.cancel();
-//    }
+    //    //实时刷新
+    public void sssx() {
+        Timer timer = new Timer();
+        if (zt2 == 0) {
+            if (boo_order) {
+                boo_order = false;
+                timer.schedule(
+                        new java.util.TimerTask() {
+                            public void run() {
+                                //        最新订单提醒
+                                ResponseResult<String> result = orderInterface.findByType(StaticToken.getToken());
+                                if (result.isSuccess()) {
+                                    mp3Util.mp3("/mp3/xddts.mp3");
+                                    pageData(0);
+                                }
+                            }
+                        }, 0, 30 * 1000);
+            }
+        } else {
+//            切换其它的时候用于终止定期时
+            timer.cancel();
+        }
+    }
 
     public void pageData(int z) {
         try {
-            if (data != null) {
-                data.clear();
-                ResponseResult<String> result = orderInterface.page(pageNow, 15, z, StaticToken.getToken());
+            getData().clear();
+            ResponseResult<String> result = orderInterface.page(pageNow, 15, z, StaticToken.getToken());
 //        更新订单列表
-                if (result.isSuccess()) {
-                    String s = result.getData().substring(result.getData().lastIndexOf("]") + 1, result.getData().length());
-                    StaticToken.setToken(s);
-                    try {
-                        String json = result.getData().substring(0, result.getData().lastIndexOf("]") + 1);
-                        List<OrderModel> beanList = objectMapper.readValue(json, new TypeReference<List<OrderModel>>() {
-                        });
-                        data.addAll(beanList);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        mp3Util.mp3("/mp3/error.mp3");
-                        logger.info(new LoggerUtil(OrderController.class, "orderpage", "数据转换错误").toString());
-                        alertUtil.f_alert_informationDialog("警告", "数据转换错误");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        mp3Util.mp3("/mp3/error.mp3");
-                        logger.info(new LoggerUtil(OrderController.class, "orderpage", "获取数据失败").toString());
-                        alertUtil.f_alert_informationDialog("警告", "获取数据失败");
-                    }
-                } else {
-                    StaticToken.setToken(result.getData());
-//                mp3Util.mp3("/mp3/error.mp3");
-                    logger.info(new LoggerUtil(OrderController.class, "orderpage", result.getMessage()).toString());
-//                alertUtil.f_alert_informationDialog("警告", result.getMessage());
+            if (result.isSuccess()) {
+                String s = result.getData().substring(result.getData().lastIndexOf("]") + 1, result.getData().length());
+                StaticToken.setToken(s);
+                try {
+                    String json = result.getData().substring(0, result.getData().lastIndexOf("]") + 1);
+                    List<OrderModel> beanList = objectMapper.readValue(json, new TypeReference<List<OrderModel>>() {
+                    });
+                    getData().addAll(beanList);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    mp3Util.mp3("/mp3/error.mp3");
+                    logger.info(new LoggerUtil(OrderController.class, "orderpage", "数据转换错误").toString());
+                    alertUtil.f_alert_informationDialog("警告", "数据转换错误");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    mp3Util.mp3("/mp3/error.mp3");
+                    logger.info(new LoggerUtil(OrderController.class, "orderpage", "获取数据失败").toString());
+                    alertUtil.f_alert_informationDialog("警告", "获取数据失败");
                 }
+            } else {
+                StaticToken.setToken(result.getData());
+//                mp3Util.mp3("/mp3/error.mp3");
+                logger.info(new LoggerUtil(OrderController.class, "orderpage", result.getMessage()).toString());
+//                alertUtil.f_alert_informationDialog("警告", result.getMessage());
             }
         } catch (RuntimeException e) {
 //            mp3Util.mp3("/mp3/error.mp3");
@@ -434,5 +434,4 @@ public class OrderController {
     public void setData(ObservableList<OrderModel> data) {
         this.data = data;
     }
-
 }

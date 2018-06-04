@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.javafx.robot.impl.FXRobotHelper;
 import feign.FeignException;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -146,46 +148,54 @@ public class IndexController {
             login_login.setDisable(false);
             login_login.setText("登录");
         } else {
-            AccountModel model = new AccountModel();
-            model.setUsername(account);
-            model.setPassword(Base64Util.encode(password));
-            model.setTypes(1);
-            try {
-                String json = objectMapper.writeValueAsString(model);
-                ResponseResult<String> result = accountInterface.login(json);
-                if (result.isSuccess()) {
-//                    mp3Util.mp3("/mp3/error.mp3");
-                    HomeController homeController = new HomeController();
-                    homeController.init(result.getData());
-                } else {
-                    mp3Util.mp3("/mp3/error.mp3");
-                    logger.info(new LoggerUtil(IndexController.class, "login", result.getMessage()).toString());
-                    error.setText(result.getMessage());
-                    login_login.setDisable(false);
-                    login_login.setText("登录");
+            Task<Void> task = new Task<Void>() {
+                @Override
+                protected Void call() throws Exception {
+                    Platform.runLater(() -> {
+                        AccountModel model = new AccountModel();
+                        model.setUsername(account);
+                        model.setPassword(Base64Util.encode(password));
+                        model.setTypes(1);
+                        try {
+                            String json = objectMapper.writeValueAsString(model);
+                            ResponseResult<String> result = accountInterface.login(json);
+                            if (result.isSuccess()) {
+                                HomeController homeController = new HomeController();
+                                homeController.init(result.getData());
+                            } else {
+                                mp3Util.mp3("/mp3/error.mp3");
+                                logger.info(new LoggerUtil(IndexController.class, "login", result.getMessage()).toString());
+                                error.setText(result.getMessage());
+                                login_login.setDisable(false);
+                                login_login.setText("登录");
+                            }
+                        } catch (JsonProcessingException e) {
+                            e.printStackTrace();
+                            mp3Util.mp3("/mp3/error.mp3");
+                            logger.info(new LoggerUtil(IndexController.class, "login", "数据转换错误").toString());
+                            error.setText("数据转换错误");
+                            login_login.setDisable(false);
+                            login_login.setText("登录");
+                        } catch (FeignException e) {
+                            e.printStackTrace();
+                            mp3Util.mp3("/mp3/error.mp3");
+                            logger.info(new LoggerUtil(IndexController.class, "login", "远程服务器错误").toString());
+                            error.setText("远程服务器错误");
+                            login_login.setDisable(false);
+                            login_login.setText("登录");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            mp3Util.mp3("/mp3/error.mp3");
+                            logger.info(new LoggerUtil(IndexController.class, "login", "跳转错误").toString());
+                            error.setText("跳转错误");
+                            login_login.setDisable(false);
+                            login_login.setText("登录");
+                        }
+                    });
+                    return null;
                 }
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-                mp3Util.mp3("/mp3/error.mp3");
-                logger.info(new LoggerUtil(IndexController.class, "login", "数据转换错误").toString());
-                error.setText("数据转换错误");
-                login_login.setDisable(false);
-                login_login.setText("登录");
-            } catch (FeignException e) {
-                e.printStackTrace();
-                mp3Util.mp3("/mp3/error.mp3");
-                logger.info(new LoggerUtil(IndexController.class, "login", "远程服务器错误").toString());
-                error.setText("远程服务器错误");
-                login_login.setDisable(false);
-                login_login.setText("登录");
-            } catch (Exception e) {
-                e.printStackTrace();
-                mp3Util.mp3("/mp3/error.mp3");
-                logger.info(new LoggerUtil(IndexController.class, "login", "跳转错误").toString());
-                error.setText("跳转错误");
-                login_login.setDisable(false);
-                login_login.setText("登录");
-            }
+            };
+            new Thread(task).start();
         }
     }
 }
